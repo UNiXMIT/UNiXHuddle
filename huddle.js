@@ -93,13 +93,17 @@ app.get('/load', (req, res) => {
     });
 });
 
-app.post('/adduser', (req, res) => {
-    const { userName } = req.body;
-    db.run('INSERT OR REPLACE INTO huddleUsers (userName) VALUES (?)', [userName],
+app.post('/addusers', (req, res) => {
+    const { userNames } = req.body;
+    if (!Array.isArray(userNames) || userNames.length === 0) {
+        return res.status(400).send('Invalid request format. Please provide an array of usernames.');
+    }
+    const placeholders = userNames.map(() => '(?)').join(', ');
+    db.run(`INSERT OR REPLACE INTO huddleUsers (userName) VALUES ${placeholders}`, userNames,
         (err) => {
             if (err) {
                 console.error(err);
-                res.status(500).send('Error saving user');
+                res.status(500).send('Error saving user(s)');
             } else {
                 res.sendStatus(200);
             }
@@ -107,19 +111,25 @@ app.post('/adduser', (req, res) => {
     );
 });
 
-app.delete('/deluser', (req, res) => {
-    const { userName } = req.body;
-    db.run('DELETE FROM huddleUsers WHERE userName = ?', [userName],
+
+app.delete('/delusers', (req, res) => {
+    const { userNames } = req.body;
+    if (!Array.isArray(userNames) || userNames.length === 0) {
+        return res.status(400).send('Invalid request format. Please provide an array of usernames.');
+    }
+    const placeholders = userNames.map(() => '?').join(', ');
+    db.run(`DELETE FROM huddleUsers WHERE userName IN (${placeholders})`, userNames,
         (err) => {
             if (err) {
                 console.error(err);
-                res.status(500).send('Error deleting user');
+                res.status(500).send('Error deleting user(s)');
             } else {
                 res.sendStatus(200);
             }
         }
     );
 });
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
