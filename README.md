@@ -67,7 +67,7 @@ podman logs huddle
 
 ## API
 ### Add Users
-POST /addusers  
+POST /users  
 ```
 {
   "userNames": ["Han Solo", "Darth Vader"]
@@ -76,7 +76,7 @@ POST /addusers
 cURL Example:  
 ```
 curl --request POST \
-  --url https://example.com:3000/addusers \
+  --url https://example.com:3000/users \
   --header 'Content-Type: application/json' \
   --data '{
     "userNames": ["Han Solo", "Darth Vader"]
@@ -84,7 +84,7 @@ curl --request POST \
 ```
 
 ### Delete User
-DELETE /delusers  
+DELETE /users  
 ```
 {
   "userNames": ["Han Solo", "Darth Vader"]
@@ -93,7 +93,7 @@ DELETE /delusers
 cURL Example:  
 ```
 curl --request DELETE \
-  --url https://example.com:3000/addusers \
+  --url https://example.com:3000/users \
   --header 'Content-Type: application/json' \
   --data '{
     "userNames": ["Han Solo", "Darth Vader"]
