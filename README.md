@@ -2,11 +2,14 @@
 
 - [Overview](#overview)
 - [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Cloud Environment](#cloud-environment)
 - [Install Instructions](#install-instructions)
-- [AMC Huddle](#amc-huddle)
+- [Huddle Web UI](#huddle-web-ui)
+- [Customization](#customization)
 - [Backup Huddle](#backup-huddle)
 - [Check Huddle Logs](#check-huddle-logs)
-- [API](#api)
+- [Huddle API](#huddle-api)
 
 ## Overview
 A Team Huddle site where teams can submit metrics ready for a Daily Huddle discussion.  
@@ -44,7 +47,7 @@ chmod +x huddle.sh
 ./huddle.sh
 ``` 
 
-## AMC Huddle
+## Huddle Web UI
 You can access the Huddle Web UI with:  
 ```
 http://serverIP:3000
@@ -52,7 +55,10 @@ http://serverIP:3000
 
 ## Customization
 To set a custom the name for the Huddle, modify the ``<title>`` and ``<h1>`` tag values in the index.html file.  
-To modify the port that Huddle uses on the host, modify line 8 of the huddle.sh file before running it.  
+To modify the port that Huddle uses on the host, modify line 8 of the huddle.sh file before running it, where 'xxxx' is an available port on the host machine to use.    
+```
+-p xxxx:3000
+```
 
 ## Backup Huddle
 The Huddle huddleData.db file is mapped onto the host in the following location:  
@@ -65,8 +71,8 @@ The Huddle huddleData.db file is mapped onto the host in the following location:
 podman logs huddle
 ```
 
-## API
-### Add Users
+## Huddle API
+### Add User(s)
 POST /users  
 ```
 {
@@ -83,7 +89,7 @@ curl --request POST \
   }'
 ```
 
-### Delete User
+### Delete User(s)
 DELETE /users  
 ```
 {
@@ -99,3 +105,20 @@ curl --request DELETE \
     "userNames": ["Han Solo", "Darth Vader"]
   }'
 ```
+
+### Get Metrics
+GET /metrics
+```
+http://example.com:3000/metrics?start=2024-02-28&end=2024-01-28
+```
+To get this data directly into Excel:  
+1. Open Excel Desktop.  
+2. Create a blank workbook.  
+3. Select Data > Get & Transform > From Web.  
+4. Enter the API URL (modifying the start and end dates) into the text box, and click OK.  
+5. The Navigator pane should already have the Transform tab selected. Select 'To Table' and click OK, accepting the defaults.  
+6. Left click the arrows in the 'Column1' header. This will reveal the names of the value pairs.  
+7. Uncheck the box 'Use original column name as prefix' and click OK.  
+  You should now see a preview of the table with the data from the API response.  
+8. Select 'Close & Load' in the Navigator pane.  
+  The data will now be loaded into a table in the Excel workbook.  

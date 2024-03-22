@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     function getUsers() {
-        fetch('/getusers')
+        fetch('/users')
         .then(response => response.json())
         .then(data => {
             const selectBox = document.getElementById('userName');

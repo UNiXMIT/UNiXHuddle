@@ -51,17 +51,6 @@ function createUsersTable() {
     });
 }
 
-app.get('/getusers', (req, res) => {
-    db.all("SELECT * FROM huddleUsers ORDER BY userName ASC", (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        } else {
-            res.json(rows);
-        }
-    });
-});
-
 app.post('/submit', (req, res) => {
     const { userName, date, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 } = req.body;
     db.run('INSERT OR REPLACE INTO huddleData (userName, date, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -126,6 +115,35 @@ app.use('/users', (req, res) => {
                 }
             }
         );
+    } else if (req.method === 'GET') {
+        db.all("SELECT * FROM huddleUsers ORDER BY userName ASC", (err, rows) => {
+            if (err) {
+                res.status(500).json({ error: err.message });
+                return;
+            } else {
+                res.json(rows);
+            }
+        });
+    } else {
+        res.status(405).send('Method Not Allowed');
+    }
+});
+
+app.use('/metrics', (req, res) => {
+    if (req.method === 'GET') {
+        const { start, end } = req.query;
+        db.all('SELECT * FROM huddleData WHERE date BETWEEN ? AND ?;', [start, end], (err, rows) => {
+            if (err) {
+                console.error(err.message);
+                res.sendStatus(500);
+            } else {
+                if (rows) {
+                    res.json(rows);
+                } else {
+                    res.sendStatus(204);
+                }
+            }
+        });
     } else {
         res.status(405).send('Method Not Allowed');
     }
