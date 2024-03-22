@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMC EMEA Huddle</title>
+    <link href="style.css" rel="stylesheet" />
+    <link href="https://use.fontawesome.com/releases/v6.5.0/css/all.css" rel="stylesheet" crossorigin="anonymous">
+</head>
+<body>
+    <div id="main">
+    <h1>AMC EMEA Huddle</h1>
+    <form id="userDataForm" onsubmit="return false">
+        <label for="userName">User:</label>
+        <i id="previous" class="fa-solid fa-caret-left"></i>
+        <select id="userName"></select>
+        <i id="next" class="fa-solid fa-caret-right"></i>
+        <label for="date">Date:</label>
+        <input type="date" id="date">
+        <div id="group">
+            <label class="inline" for="capacity">Capacity (1-5):</label>
+            <input type="number" id="capacity" min="0"><br>
+            <label class="inline" for="wellbeing">Wellbeing (Minutes):</label>
+            <input type="number" id="wellbeing" min="0" max="5"><br>
+            <label class="inline" for="upskilling">Upskilling (Minutes):</label>
+            <input type="number" id="upskilling" min="0"><br>
+            <label class="inline" for="knowledgeTransfer">Knowledge Transfer (Minutes):</label>
+            <input type="number" id="knowledgeTransfer" min="0"><br>
+        </div>
+        <label class="inline" for="goal1">Goal 1:</label>
+        <input type="text" id="goal1" class="goals">
+        <label class="inline" for="goal2">Goal 2:</label>
+        <input type="text" id="goal2" class="goals">
+        <label class="inline" for="goal3">Goal 3:</label>
+        <input type="text" id="goal3" class="goals">
+        <label class="inline" for="goal4">Goal 4:</label>
+        <input type="text" id="goal4" class="goals">
+        <label class="inline" for="goal5">Goal 5:</label>
+        <input type="text" id="goal5" class="goals">
+        <input type="submit" id="submit" value="Submit">
+    </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

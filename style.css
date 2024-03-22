@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Source+Code+Pro&display=swap');
+body {
+    margin: 0;
+    padding: 0 10px;
+    overflow-x: hidden;
+}
+#main {
+    width: 500px;
+    margin: 30px auto;
+}
+h1 {
+    font-family: "Roboto", sans-serif;
+    font-weight: 900;
+    font-size: 40px;
+}
+h1:after {
+    width: 75px;
+    border-bottom: 4px solid #0570f6;
+    display: block;
+    content: "";
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+label {
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    display: block;
+}
+#userName {
+    font-size: 16px;
+    text-align: center;
+}
+#date {
+    font-size: 14px;
+}
+select {
+    font-family: "Roboto", sans-serif;
+}
+input {
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+}
+#group input {
+    display: inline-block;
+}
+#group label {
+    display: inline-block;
+}
+.goals {
+    width: 480px;
+}
+input[type="number"] {
+    width: 40px; 
+    text-align: center;
+    -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button, 
+input[type="number"]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+#group {
+    display: block;
+}
+.fa-solid {
+    cursor: pointer;
+}
+#submit {
+    font-size: 20px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 600;
+    line-height: 10px;
+    padding: 20px;
+    background: #0d0d0d;
+    color: #fff;
+    margin: 30px auto 0;
+    display: block;
+    width: 120px;
+    text-align: center;
+    border: 1px solid #0d0d0d;
+    transition: color 0.3s, background 0.3s;
+    text-decoration: none;
+}
+#submit:hover {
+    background: #fff;
+    color: #0d0d0d;
+    cursor: pointer;
+}
+
