@@ -76,7 +76,7 @@ POST /addusers
 cURL Example:  
 ```
 curl --request POST \
-  --url https://example.com/addusers \
+  --url https://example.com:3000/addusers \
   --header 'Content-Type: application/json' \
   --data '{
     "userNames": ["Han Solo", "Darth Vader"]
@@ -84,7 +84,7 @@ curl --request POST \
 ```
 
 ### Delete User
-DELETE /deluser s 
+DELETE /delusers  
 ```
 {
   "userNames": ["Han Solo", "Darth Vader"]
@@ -93,7 +93,7 @@ DELETE /deluser s
 cURL Example:  
 ```
 curl --request DELETE \
-  --url https://example.com/addusers \
+  --url https://example.com:3000/addusers \
   --header 'Content-Type: application/json' \
   --data '{
     "userNames": ["Han Solo", "Darth Vader"]
