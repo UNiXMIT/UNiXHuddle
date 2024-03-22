@@ -72,6 +72,13 @@ podman logs huddle
 ```
 
 ## Huddle API
+### Get User(s)
+GET /users  
+cURL Example:  
+```
+curl --request GET --url https://example.com:3000/users
+```
+
 ### Add User(s)
 POST /users  
 ```
