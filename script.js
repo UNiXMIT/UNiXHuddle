@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function selectNext() {
-        var select = document.getElementById('userName');
+        let select = document.getElementById('userName');
         select.selectedIndex++;
         if (!select.value) {
             resetForm();
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function selectPrevious() {
-        var select = document.getElementById('userName');
+        let select = document.getElementById('userName');
         select.selectedIndex--;
         if (!select.value) {
             resetForm();
