@@ -113,7 +113,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function selectNext() {
         let select = document.getElementById('userName');
-        select.selectedIndex++;
+        if (select.selectedIndex < select.options.length - 1) {
+            select.selectedIndex++;
+        }
         if (!select.value) {
             resetForm();
         }
@@ -122,7 +124,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function selectPrevious() {
         let select = document.getElementById('userName');
-        select.selectedIndex--;
+        if (select.selectedIndex > 0 ) {
+            select.selectedIndex--;
+        }
         if (!select.value) {
             resetForm();
         }
@@ -134,24 +138,12 @@ document.addEventListener('DOMContentLoaded', function() {
         local.setMinutes(dateObject.getMinutes() - dateObject.getTimezoneOffset());
         return local.toJSON().slice(0,10);
     }
-
-    function assignKeys() {
-        window.addEventListener('keydown', function(event) {
-            if (event.code === 37 || event.key === "ArrowLeft") {
-                selectPrevious();
-            }
-            if (event.code === 39 || event.key === "ArrowRight") {
-                selectNext();
-            }
-        });
-    }
     
     document.getElementById('userName').addEventListener('change', getDataUser);
     document.getElementById('date').addEventListener('change', getDataUser);
     document.getElementById('next').addEventListener('click', selectNext);
     document.getElementById('previous').addEventListener('click', selectPrevious);
     document.getElementById('submit').addEventListener('click', submitData); 
-    assignKeys();
     getUsers();
 
 });
