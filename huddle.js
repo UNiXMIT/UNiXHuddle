@@ -52,6 +52,9 @@ function createUsersTable() {
 }
 
 app.post('/submit', (req, res) => {
+    if (req.method !== 'POST') {
+        return res.status(405).send('Method Not Allowed');
+    }
     const { userName, date, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 } = req.body;
     db.run('INSERT OR REPLACE INTO huddleData (userName, date, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [userName, date, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5],
@@ -67,6 +70,9 @@ app.post('/submit', (req, res) => {
 });
 
 app.get('/load', (req, res) => {
+    if (req.method !== 'GET') {
+        return res.status(405).send('Method Not Allowed');
+    }
     const { userName, date } = req.query;
     db.get('SELECT * FROM huddleData WHERE userName = ? AND date = ?', [userName, date], (err, row) => {
         if (err) {

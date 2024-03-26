@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const goal5 = document.getElementById('goal5').value;
             const data = JSON.stringify({ userName, date, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 });
             sendData(data);
-            formChanged = false;
         }
     }
 
@@ -44,20 +43,42 @@ document.addEventListener('DOMContentLoaded', function() {
             body: data
         })
         .then(response => {
-            // alert("Data has been saved.");
+            if (response.status === 200) {
+                let alertButton = document.querySelector('.submit');
+                alertButton.classList.add("disableHover");
+                alertButton.style.backgroundColor = 'mediumseagreen';
+                alertButton.style.borderColor =  'mediumseagreen';
+                alertButton.value = 'Saved';
+                setTimeout(function () {
+                    alertButton.style = '';
+                    alertButton.value = 'Submit';
+                    alertButton.classList.remove("disableHover");
+                }, 2000);
+                formChanged = false;
+            } else {
+                let alertButton = document.querySelector('.submit');
+                alertButton.classList.add("disableHover");
+                alertButton.style.backgroundColor = 'red';
+                alertButton.style.borderColor =  'red';
+                alertButton.value = 'ERROR!';
+                setTimeout(function () {
+                    alertButton.style = '';
+                    alertButton.value = 'Submit';
+                    alertButton.classList.remove("disableHover");
+                }, 2000); 
+            }
+        })
+        .catch((error) => {
             let alertButton = document.querySelector('.submit');
             alertButton.classList.add("disableHover");
-            alertButton.style.backgroundColor = 'mediumseagreen';
-            alertButton.style.borderColor =  'mediumseagreen';
-            alertButton.value = 'Saved';
+            alertButton.style.backgroundColor = 'red';
+            alertButton.style.borderColor =  'red';
+            alertButton.value = 'ERROR!';
             setTimeout(function () {
                 alertButton.style = '';
                 alertButton.value = 'Submit';
                 alertButton.classList.remove("disableHover");
             }, 2000);
-        })
-        .catch((error) => {
-            alert("There was a problem saving your data. Please try again.")
         });
     }
 
