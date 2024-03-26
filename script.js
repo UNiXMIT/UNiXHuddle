@@ -19,19 +19,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function submitData(event) {
         event.preventDefault();
-        const userName = document.getElementById('userName').value;
-        const date = document.getElementById('date').value;
-        const capacity = document.getElementById('capacity').value;
-        const wellbeing = document.getElementById('wellbeing').value;
-        const upskilling = document.getElementById('upskilling').value;
-        const knowledgeTransfer = document.getElementById('knowledgeTransfer').value;
-        const goal1 = document.getElementById('goal1').value;
-        const goal2 = document.getElementById('goal2').value;
-        const goal3 = document.getElementById('goal3').value;
-        const goal4 = document.getElementById('goal4').value;
-        const goal5 = document.getElementById('goal5').value;
-        const data = JSON.stringify({ userName, date, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 });
-        sendData(data);
+        if (formChanged) {
+            const userName = document.getElementById('userName').value;
+            const date = document.getElementById('date').value;
+            const capacity = document.getElementById('capacity').value;
+            const wellbeing = document.getElementById('wellbeing').value;
+            const upskilling = document.getElementById('upskilling').value;
+            const knowledgeTransfer = document.getElementById('knowledgeTransfer').value;
+            const goal1 = document.getElementById('goal1').value;
+            const goal2 = document.getElementById('goal2').value;
+            const goal3 = document.getElementById('goal3').value;
+            const goal4 = document.getElementById('goal4').value;
+            const goal5 = document.getElementById('goal5').value;
+            const data = JSON.stringify({ userName, date, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 });
+            sendData(data);
+            formChanged = false;
+        }
     }
 
     async function sendData(data) {
@@ -41,7 +44,17 @@ document.addEventListener('DOMContentLoaded', function() {
             body: data
         })
         .then(response => {
-            alert("Data has been saved.");
+            // alert("Data has been saved.");
+            let alertButton = document.querySelector('.submit');
+            alertButton.classList.add("disableHover");
+            alertButton.style.backgroundColor = 'mediumseagreen';
+            alertButton.style.borderColor =  'mediumseagreen';
+            alertButton.value = 'Saved';
+            setTimeout(function () {
+                alertButton.style = '';
+                alertButton.value = 'Submit';
+                alertButton.classList.remove("disableHover");
+            }, 2000);
         })
         .catch((error) => {
             alert("There was a problem saving your data. Please try again.")
@@ -113,24 +126,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function selectNext() {
         let select = document.getElementById('userName');
-        if (select.selectedIndex < select.options.length - 1) {
+        if (formChanged && select.selectedIndex < select.options.length - 1) {
+            let confirmed = confirm("You have unsaved changes. Are you sure you want to submit the form?");
+            if (!confirmed) {
+                return false;
+            } else {
+                document.querySelector('.submit').click();
+                select.selectedIndex++;
+                if (!select.value) {
+                    resetForm();
+                }
+                getDataUser();
+            }
+        } else if (select.selectedIndex < select.options.length - 1) {
             select.selectedIndex++;
+            if (!select.value) {
+                resetForm();
+            }
+            getDataUser();
         }
-        if (!select.value) {
-            resetForm();
-        }
-        getDataUser();
     }
 
     function selectPrevious() {
         let select = document.getElementById('userName');
-        if (select.selectedIndex > 0 ) {
+        if (formChanged && select.selectedIndex > 0) {
+            let confirmed = confirm("You have unsaved changes. Are you sure you want to submit the form?");
+            if (!confirmed) {
+                return false;
+            } else {
+                document.querySelector('.submit').click();
+                select.selectedIndex--;
+                if (!select.value) {
+                    resetForm();
+                }
+                getDataUser();
+            }
+        } else if (select.selectedIndex > 0) {
             select.selectedIndex--;
+            if (!select.value) {
+                resetForm();
+            }
+            getDataUser();
         }
-        if (!select.value) {
-            resetForm();
-        }
-        getDataUser();
     }
 
     function toDateInputValue(dateObject){
@@ -138,12 +175,27 @@ document.addEventListener('DOMContentLoaded', function() {
         local.setMinutes(dateObject.getMinutes() - dateObject.getTimezoneOffset());
         return local.toJSON().slice(0,10);
     }
+
+    function onInputChange() {
+        formChanged = true;
+    }
     
     document.getElementById('userName').addEventListener('change', getDataUser);
     document.getElementById('date').addEventListener('change', getDataUser);
     document.getElementById('next').addEventListener('click', selectNext);
     document.getElementById('previous').addEventListener('click', selectPrevious);
-    document.getElementById('submit').addEventListener('click', submitData); 
+    document.querySelector('.submit').addEventListener('click', submitData); 
     getUsers();
+    let form = document.getElementById('metrics');
+    let inputs = form.getElementsByTagName('input');
+    let formChanged = false;
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].addEventListener('input', onInputChange);
+    }
+    window.onbeforeunload = function() {
+        if (formChanged) {
+            return "You have unsaved changes. Are you sure you want to leave this page?";
+        }
+    };
 
 });

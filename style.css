@@ -6,7 +6,7 @@ body {
 }
 #main {
     width: 500px;
-    margin: 30px auto;
+    margin: 30px auto 0;
 }
 h1 {
     font-family: "Roboto", sans-serif;
@@ -32,6 +32,13 @@ label {
 #userName {
     font-size: 16px;
     text-align: center;
+    display: inline-block;
+}
+#group1 {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: fit-content;
 }
 #date {
     font-size: 14px;
@@ -43,10 +50,10 @@ input {
     font-family: "Roboto", sans-serif;
     font-size: 14px;
 }
-#group input {
+#group2 input {
     display: inline-block;
 }
-#group label {
+#group2 label {
     display: inline-block;
 }
 .goals {
@@ -62,13 +69,20 @@ input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none; 
     margin: 0; 
 }
-#group {
+#group2 {
     display: block;
 }
 .fa-solid {
     cursor: pointer;
+    font-size: 30px;
+    line-height: 20px;
+    transition: color 0.3s, background 0.3s;
+    display: inline-block;
 }
-#submit {
+.fa-solid:hover {
+    color: #0570f6;
+}
+.submit {
     font-size: 20px;
     font-family: "Roboto", sans-serif;
     font-weight: 600;
@@ -83,10 +97,15 @@ input[type="number"]::-webkit-outer-spin-button {
     border: 1px solid #0d0d0d;
     transition: color 0.3s, background 0.3s;
     text-decoration: none;
+    border-radius: 6px;
 }
-#submit:hover {
+.submit:hover {
     background: #fff;
     color: #0d0d0d;
     cursor: pointer;
 }
-
+.disableHover:hover {
+    background: #0d0d0d;
+    color: #fff;
+    cursor: default;
+}
