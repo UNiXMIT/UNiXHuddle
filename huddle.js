@@ -127,7 +127,8 @@ app.use('/users', (req, res) => {
                 res.status(500).json({ error: err.message });
                 return;
             } else {
-                res.json(rows);
+                const userNames = rows.map(row => row.userName);
+                res.json({userNames: userNames});
             }
         });
     } else {

@@ -5,10 +5,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             const selectBox = document.getElementById('userName');
-            data.forEach(row => {
+            data.userNames.forEach(userName => {
                 const option = document.createElement('option');
-                option.value = row.userName;
-                option.text = row.userName;
+                option.value = userName;
+                option.text = userName;
                 selectBox.appendChild(option);
             });
             document.getElementById('date').value = toDateInputValue(new Date());
