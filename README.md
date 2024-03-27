@@ -78,6 +78,12 @@ cURL Example:
 ```
 curl --request GET --url https://example.com:3000/users
 ```
+Response:
+```
+{
+  "userNames": ["Han Solo", "Darth Vader"]
+}
+```
 
 ### Add User(s)
 POST /users  
