@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
             getDataUser();
         })
         .catch(error => console.error('Error fetching names:', error));
+        previousUserValue = document.querySelector('#userName').value;
+        previousDateValue = document.querySelector('#date').value;
     }
 
     function submitData(event) {
@@ -22,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
         }
         if (formChanged) {
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].disabled = true;
+            }
             const userName = document.getElementById('userName').value;
             const date = document.getElementById('date').value;
             const capacity = document.getElementById('capacity').value;
@@ -47,39 +52,48 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => {
             if (response.status === 200) {
                 let alertButton = document.querySelector('.submit');
+                let discardButton = document.querySelector('.discard');
                 alertButton.classList.add("disableHover");
-                alertButton.style.backgroundColor = 'mediumseagreen';
-                alertButton.style.borderColor =  'mediumseagreen';
+                discardButton.classList.add("disableHover");
+                alertButton.style.backgroundColor = '#3cb371';
+                alertButton.style.borderColor =  '#3cb371';
                 alertButton.value = 'Saved';
                 setTimeout(function () {
                     alertButton.style = '';
                     alertButton.value = 'Submit';
                     alertButton.classList.remove("disableHover");
+                    discardButton.classList.remove("disableHover");
+                    onSavedChange();
                 }, 2000);
-                formChanged = false;
             } else {
                 let alertButton = document.querySelector('.submit');
+                let discardButton = document.querySelector('.discard');
                 alertButton.classList.add("disableHover");
-                alertButton.style.backgroundColor = 'red';
-                alertButton.style.borderColor =  'red';
+                discardButton.classList.add("disableHover");
+                alertButton.style.backgroundColor = '#f73333';
+                alertButton.style.borderColor =  '#f73333';
                 alertButton.value = 'ERROR!';
                 setTimeout(function () {
                     alertButton.style = '';
                     alertButton.value = 'Submit';
                     alertButton.classList.remove("disableHover");
+                    discardButton.classList.remove("disableHover");
                 }, 2000); 
             }
         })
         .catch((error) => {
             let alertButton = document.querySelector('.submit');
+            let discardButton = document.querySelector('.discard');
             alertButton.classList.add("disableHover");
-            alertButton.style.backgroundColor = 'red';
-            alertButton.style.borderColor =  'red';
+            discardButton.classList.add("disableHover");
+            alertButton.style.backgroundColor = '#f73333';
+            alertButton.style.borderColor =  '#f73333';
             alertButton.value = 'ERROR!';
             setTimeout(function () {
                 alertButton.style = '';
                 alertButton.value = 'Submit';
                 alertButton.classList.remove("disableHover");
+                discardButton.classList.remove("disableHover");
             }, 2000);
         });
     }
@@ -110,22 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('goal3').value = data.goal3 || '';
             document.getElementById('goal4').value = data.goal4 || '';
             document.getElementById('goal5').value = data.goal5 || '';
-            let capacityValue = parseFloat(document.getElementById('capacity').value);
-            if (capacityValue > 3) {
-                document.getElementById('capacity').style.color = 'red';
-                document.getElementById('capacity').style.fontWeight = 'bold';
-            } else {
-                document.getElementById('capacity').style.color = 'black';
-                document.getElementById('capacity').style.fontWeight = 'normal';
-            }
-            let wellbeingValue = parseFloat(document.getElementById('wellbeing').value);
-            if (wellbeingValue < 31 && wellbeingValue > 0) {
-                document.getElementById('wellbeing').style.color = 'red';
-                document.getElementById('wellbeing').style.fontWeight = 'bold';
-            } else {
-                document.getElementById('wellbeing').style.color = 'black';
-                document.getElementById('wellbeing').style.fontWeight = 'normal';
-            }
+            validateMetrics()
         } else {
             resetForm();
         }
@@ -149,20 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelector('#next').addEventListener('click', function(event) {
         let select = document.getElementById('userName');
-        if (formChanged && select.selectedIndex < select.options.length - 1) {
-            let confirmed = confirm("You have unsaved changes. Are you sure you want to submit the form?");
-            if (!confirmed) {
-                return false;
-            } else {
-                submitData();
-                select.selectedIndex++;
-                document.querySelector('#previous').style.visibility = 'visible';
-                if (!select.value) {
-                    resetForm();
-                }
-                getDataUser();
-            }
-        } else if (select.selectedIndex < select.options.length - 1) {
+        if (!formChanged && select.selectedIndex < select.options.length - 1) {
             select.selectedIndex++;
             if (!select.value) {
                 resetForm();
@@ -177,20 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelector('#previous').addEventListener('click', function(event) {
         let select = document.getElementById('userName');
-        if (formChanged && select.selectedIndex > 0) {
-            let confirmed = confirm("You have unsaved changes. Are you sure you want to submit the form?");
-            if (!confirmed) {
-                return false;
-            } else {
-                submitData();
-                select.selectedIndex--;
-                document.querySelector('#next').style.visibility = 'visible';
-                if (!select.value) {
-                    resetForm();
-                }
-                getDataUser();
-            }
-        } else if (select.selectedIndex > 0) {
+        if (!formChanged && select.selectedIndex > 0) {
             select.selectedIndex--;
             if (!select.value) {
                 resetForm();
@@ -209,25 +182,84 @@ document.addEventListener('DOMContentLoaded', function() {
         return local.toJSON().slice(0,10);
     }
 
-    function onInputChange() {
+    function onInputChange(event) {
+        const input = event.target;
+        if (input.type === 'number') {
+            const currentValue = input.value;
+            const cleanedValue = currentValue.replace(/[^0-9.]/g, '');
+            input.value = cleanedValue;
+            if (!input.value) {
+                input.value = 0;
+            }
+        }
+        if (input.id === 'capacity') {
+            const currentValue = input.value;
+            const cleanedValue = currentValue.replace(/[^0-9.]/g, '');
+            input.value = cleanedValue;
+            if (!input.value) {
+                input.value = 0;
+            }
+        }
+        document.querySelector('#userName').disabled = true;
+        document.querySelector('#date').disabled = true;
+        let alertButton = document.querySelector('.submit');
+        alertButton.style.backgroundColor = '#ffc300';
+        alertButton.style.borderColor =  '#ffc300';
+        let discardButton = document.querySelector('.discard');
+        discardButton.style.backgroundColor = '#f73333';
+        discardButton.style.borderColor =  '#f73333';
+        validateMetrics();
         formChanged = true;
     }
 
-    document.querySelector('#userName').addEventListener('change', function(event) {
-        if (formChanged) {
-            let confirmed = confirm("You have unsaved changes. Are you sure you want to submit the form?");
-            if (!confirmed) {
-                event.preventDefault();
-                document.querySelector('#userName').value = previousUserValue;
-            } else {
-                let nextUserValue = document.querySelector('#userName').value;
-                document.querySelector('#userName').value = previousUserValue;
-                submitData();
-                formChanged = false;
-                document.querySelector('#userName').value = nextUserValue;
-                getDataUser();
-            }
+    function onSavedChange() {
+        document.querySelector('#userName').disabled = false;
+        document.querySelector('#date').disabled = false;
+        let alertButton = document.querySelector('.submit');
+        alertButton.style = '';
+        let discardButton = document.querySelector('.discard');
+        discardButton.style = '';
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].disabled = false;
+        }
+        validateMetrics();
+        formChanged = false;
+    }
+
+    function validateMetrics() {
+        let capacityValue = parseFloat(document.getElementById('capacity').value);
+        if (capacityValue > 5) {
+            document.getElementById('capacity').value = 5;
+        }
+        if (capacityValue < 0) {
+            document.getElementById('capacity').value = 0;
+        }
+        if (capacityValue > 3) {  
+            document.getElementById('capacity').style.color = '#f73333';
+            document.getElementById('capacity').style.fontWeight = 'bold';          
         } else {
+            document.getElementById('capacity').style.color = 'black';
+            document.getElementById('capacity').style.fontWeight = 'normal';
+        }
+        let wellbeingValue = parseFloat(document.getElementById('wellbeing').value);
+        if (wellbeingValue < 31 && wellbeingValue > 0) {
+            document.getElementById('wellbeing').style.color = '#f73333';
+            document.getElementById('wellbeing').style.fontWeight = 'bold';
+        } else {
+            document.getElementById('wellbeing').style.color = 'black';
+            document.getElementById('wellbeing').style.fontWeight = 'normal';
+        }
+    }
+
+    function discardChanges() {
+        if (formChanged) {
+            getDataUser();
+            onSavedChange();
+        }
+    }
+
+    document.querySelector('#userName').addEventListener('change', function(event) {
+        if (!formChanged) {
             previousUserValue = document.querySelector('#userName').value;
             getDataUser();
         }
@@ -245,30 +277,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.querySelector('#date').addEventListener('change', function(event) {
-        if (formChanged) {
-            let confirmed = confirm("You have unsaved changes. Are you sure you want to submit the form?");
-            if (!confirmed) {
-                event.preventDefault();
-                document.querySelector('#date').value = previousDateValue;
-            } else {
-                let nextDateValue = document.querySelector('#date').value;
-                document.querySelector('#date').value = previousDateValue;
-                submitData();
-                formChanged = false;
-                document.querySelector('#date').value = nextDateValue;
-                getDataUser();
-            }
-        } else {
+        if (!formChanged) {
             previousDateValue = document.querySelector('#date').value;
             getDataUser();
         }
     });
     
     document.querySelector('.submit').addEventListener('click', submitData); 
+    document.querySelector('.discard').addEventListener('click', discardChanges); 
     document.querySelector('#previous').style.visibility = 'hidden';
+    let previousUserValue = '';
+    let previousDateValue = '';
     getUsers();
-    let previousUserValue = document.querySelector('#userName').value;
-    let previousDateValue = document.querySelector('#date').value;
     let formChanged = false;
     let form = document.getElementById('metrics');
     let inputs = form.getElementsByTagName('input');

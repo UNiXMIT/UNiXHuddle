@@ -23,9 +23,9 @@
         <div id="metrics">
         <div id="group2">
             <label class="inline" for="capacity">Capacity (1-5):</label>
-            <input type="number" id="capacity" min="0"><br>
+            <input type="text" id="capacity"><br>
             <label class="inline" for="wellbeing">Wellbeing (Minutes):</label>
-            <input type="number" id="wellbeing" min="0" max="5"><br>
+            <input type="number" id="wellbeing" min="0"><br>
             <label class="inline" for="upskilling">Upskilling (Minutes):</label>
             <input type="number" id="upskilling" min="0"><br>
             <label class="inline" for="knowledgeTransfer">Knowledge Transfer (Minutes):</label>
@@ -41,7 +41,10 @@
         <input type="text" id="goal4" class="goals">
         <label class="inline" for="goal5">Goal 5:</label>
         <input type="text" id="goal5" class="goals">
-        <input type="submit" class="submit" value="Submit">
+        <div class="button-container">
+            <input type="submit" class="submit" value="Submit">
+            <input type="submit" class="discard" value="Discard">
+        </div>
     </form>
     </div>
 
