@@ -18,7 +18,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function submitData(event) {
-        event.preventDefault();
+        if (event) {
+            event.preventDefault();
+        }
         if (formChanged) {
             const userName = document.getElementById('userName').value;
             const date = document.getElementById('date').value;
@@ -145,15 +147,16 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('wellbeing').style.fontWeight = 'normal';
     }
 
-    function selectNext() {
+    document.querySelector('#next').addEventListener('click', function(event) {
         let select = document.getElementById('userName');
         if (formChanged && select.selectedIndex < select.options.length - 1) {
             let confirmed = confirm("You have unsaved changes. Are you sure you want to submit the form?");
             if (!confirmed) {
                 return false;
             } else {
-                document.querySelector('.submit').click();
+                submitData();
                 select.selectedIndex++;
+                document.querySelector('#previous').style.visibility = 'visible';
                 if (!select.value) {
                     resetForm();
                 }
@@ -165,18 +168,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 resetForm();
             }
             getDataUser();
+            document.querySelector('#previous').style.visibility = 'visible';
+        } 
+        if (select.selectedIndex === select.options.length - 1) {
+            document.querySelector('#next').style.visibility = 'hidden';
         }
-    }
+    });
 
-    function selectPrevious() {
+    document.querySelector('#previous').addEventListener('click', function(event) {
         let select = document.getElementById('userName');
         if (formChanged && select.selectedIndex > 0) {
             let confirmed = confirm("You have unsaved changes. Are you sure you want to submit the form?");
             if (!confirmed) {
                 return false;
             } else {
-                document.querySelector('.submit').click();
+                submitData();
                 select.selectedIndex--;
+                document.querySelector('#next').style.visibility = 'visible';
                 if (!select.value) {
                     resetForm();
                 }
@@ -188,8 +196,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 resetForm();
             }
             getDataUser();
+            document.querySelector('#next').style.visibility = 'visible';
         }
-    }
+        if (select.selectedIndex === 0) {
+            document.querySelector('#previous').style.visibility = 'hidden';
+        }
+    });
 
     function toDateInputValue(dateObject){
         const local = new Date(dateObject);
@@ -200,16 +212,66 @@ document.addEventListener('DOMContentLoaded', function() {
     function onInputChange() {
         formChanged = true;
     }
+
+    document.querySelector('#userName').addEventListener('change', function(event) {
+        if (formChanged) {
+            let confirmed = confirm("You have unsaved changes. Are you sure you want to submit the form?");
+            if (!confirmed) {
+                event.preventDefault();
+                document.querySelector('#userName').value = previousUserValue;
+            } else {
+                let nextUserValue = document.querySelector('#userName').value;
+                document.querySelector('#userName').value = previousUserValue;
+                submitData();
+                formChanged = false;
+                document.querySelector('#userName').value = nextUserValue;
+                getDataUser();
+            }
+        } else {
+            previousUserValue = document.querySelector('#userName').value;
+            getDataUser();
+        }
+        let select = document.getElementById('userName');
+        if (select.selectedIndex === select.options.length - 1) {
+            document.querySelector('#next').style.visibility = 'hidden';
+            document.querySelector('#previous').style.visibility = 'visible';
+        } else if (select.selectedIndex === 0) {
+            document.querySelector('#next').style.visibility = 'visible';
+            document.querySelector('#previous').style.visibility = 'hidden';
+        } else {
+            document.querySelector('#next').style.visibility = 'visible';
+            document.querySelector('#previous').style.visibility = 'visible';
+        }
+    });
+
+    document.querySelector('#date').addEventListener('change', function(event) {
+        if (formChanged) {
+            let confirmed = confirm("You have unsaved changes. Are you sure you want to submit the form?");
+            if (!confirmed) {
+                event.preventDefault();
+                document.querySelector('#date').value = previousDateValue;
+            } else {
+                let nextDateValue = document.querySelector('#date').value;
+                document.querySelector('#date').value = previousDateValue;
+                submitData();
+                formChanged = false;
+                document.querySelector('#date').value = nextDateValue;
+                getDataUser();
+            }
+        } else {
+            previousDateValue = document.querySelector('#date').value;
+            getDataUser();
+        }
+    });
     
-    document.getElementById('userName').addEventListener('change', getDataUser);
-    document.getElementById('date').addEventListener('change', getDataUser);
-    document.getElementById('next').addEventListener('click', selectNext);
-    document.getElementById('previous').addEventListener('click', selectPrevious);
     document.querySelector('.submit').addEventListener('click', submitData); 
+    document.querySelector('#previous').style.visibility = 'hidden';
     getUsers();
+    let previousUserValue = document.querySelector('#userName').value;
+    let previousDateValue = document.querySelector('#date').value;
+    let formChanged = false;
     let form = document.getElementById('metrics');
     let inputs = form.getElementsByTagName('input');
-    let formChanged = false;
     for (let i = 0; i < inputs.length; i++) {
         inputs[i].addEventListener('input', onInputChange);
     }
