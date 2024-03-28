@@ -73,12 +73,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 alertButton.style.backgroundColor = '#f73333';
                 alertButton.style.borderColor =  '#f73333';
                 alertButton.value = 'ERROR!';
-                setTimeout(function () {
-                    alertButton.style = '';
+                (async ()=>{
+                    await sleep(2000);
+                    onSaveError();
+                    alertButton.style.backgroundColor = '#ffc300';
+                    alertButton.style.borderColor =  '#ffc300';
                     alertButton.value = 'Submit';
                     alertButton.classList.remove("disableHover");
                     discardButton.classList.remove("disableHover");
-                }, 2000); 
+                })(); 
             }
         })
         .catch((error) => {
@@ -89,12 +92,15 @@ document.addEventListener('DOMContentLoaded', function() {
             alertButton.style.backgroundColor = '#f73333';
             alertButton.style.borderColor =  '#f73333';
             alertButton.value = 'ERROR!';
-            setTimeout(function () {
-                alertButton.style = '';
+            (async ()=>{
+                await sleep(2000);
+                onSaveError();
+                alertButton.style.backgroundColor = '#ffc300';
+                alertButton.style.borderColor =  '#ffc300';
                 alertButton.value = 'Submit';
                 alertButton.classList.remove("disableHover");
                 discardButton.classList.remove("disableHover");
-            }, 2000);
+            })();
         });
     }
 
@@ -226,6 +232,13 @@ document.addEventListener('DOMContentLoaded', function() {
         formChanged = false;
     }
 
+    function onSaveError() {
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].disabled = false;
+        }
+        validateMetrics();
+    }
+
     function validateMetrics() {
         let capacityValue = parseFloat(document.getElementById('capacity').value);
         if (capacityValue > 5) {
@@ -282,6 +295,10 @@ document.addEventListener('DOMContentLoaded', function() {
             getDataUser();
         }
     });
+
+    const sleep = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds));
+    };
     
     document.querySelector('.submit').addEventListener('click', submitData); 
     document.querySelector('.discard').addEventListener('click', discardChanges); 
