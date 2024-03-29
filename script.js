@@ -273,11 +273,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function assignKeys() {
         window.addEventListener('keydown', function(event) {
-            if (event.ctrlKey && event.code === 37 || event.ctrlKey && event.key === "ArrowLeft") {
-                selectPrevious();
-            }
-            if (event.ctrlKey && event.code === 39 || event.ctrlKey && event.key === "ArrowRight") {
-                selectNext();
+            if (document.activeElement.tagName !== 'INPUT') {
+                if (event.code === 37 ||event.key === "ArrowLeft") {
+                    selectPrevious();
+                }
+                if (event.code === 39 ||event.key === "ArrowRight") {
+                    selectNext();
+                }
+                // if (event.code === 38 ||event.key === "ArrowUp") {
+                // }
+                // if (event.code === 40 ||event.key === "ArrowDown") {
+                // }
             }
         });
     }
