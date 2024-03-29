@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function assignKeys() {
         window.addEventListener('keydown', function(event) {
-            if (document.activeElement.tagName !== 'INPUT') {
+            if (document.activeElement.tagName !== 'INPUT' && !formChanged) {
                 if (event.code === 37 ||event.key === "ArrowLeft") {
                     selectPrevious();
                 }
