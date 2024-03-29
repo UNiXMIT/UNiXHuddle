@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('wellbeing').style.fontWeight = 'normal';
     }
 
-    document.querySelector('#next').addEventListener('click', function(event) {
+    function selectNext() {
         let select = document.getElementById('userName');
         if (!formChanged && select.selectedIndex < select.options.length - 1) {
             select.selectedIndex++;
@@ -165,9 +165,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (select.selectedIndex === select.options.length - 1) {
             document.querySelector('#next').style.visibility = 'hidden';
         }
-    });
+    }
 
-    document.querySelector('#previous').addEventListener('click', function(event) {
+    function selectPrevious() {
         let select = document.getElementById('userName');
         if (!formChanged && select.selectedIndex > 0) {
             select.selectedIndex--;
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (select.selectedIndex === 0) {
             document.querySelector('#previous').style.visibility = 'hidden';
         }
-    });
+    }
 
     function toDateInputValue(dateObject){
         const local = new Date(dateObject);
@@ -271,6 +271,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function assignKeys() {
+        window.addEventListener('keydown', function(event) {
+            if (event.ctrlKey && event.code === 37 || event.ctrlKey && event.key === "ArrowLeft") {
+                selectPrevious();
+            }
+            if (event.ctrlKey && event.code === 39 || event.ctrlKey && event.key === "ArrowRight") {
+                selectNext();
+            }
+        });
+    }
+
     document.querySelector('#userName').addEventListener('change', function(event) {
         if (!formChanged) {
             previousUserValue = document.querySelector('#userName').value;
@@ -300,12 +311,15 @@ document.addEventListener('DOMContentLoaded', function() {
         return new Promise(resolve => setTimeout(resolve, milliseconds));
     };
     
+    document.querySelector('#next').addEventListener('click', selectNext);
+    document.querySelector('#previous').addEventListener('click', selectPrevious);
     document.querySelector('.submit').addEventListener('click', submitData); 
     document.querySelector('.discard').addEventListener('click', discardChanges); 
     document.querySelector('#previous').style.visibility = 'hidden';
     let previousUserValue = '';
     let previousDateValue = '';
     getUsers();
+    assignKeys();
     let formChanged = false;
     let form = document.getElementById('metrics');
     let inputs = form.getElementsByTagName('input');
