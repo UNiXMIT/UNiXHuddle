@@ -19,7 +19,7 @@ Data is written, using SQLite, to a file called huddleData.db. It contains a tab
 ## Features
 - Users can select their user and a date then enter their metrics for that day.  
 - Data is pulled from the SQLite when a user changes the user or date in the form.  
-- The Huddle host can navigate through the user list using the arrows in the form.  
+- The Huddle host can navigate through the user list using the arrows in the form or using ctrl + the right or left keyboard keys.  
 - If a users capacity is greater than 3 or their wellbeing is 30 minutes or less, those metrics will appear as red and bold so the Huddle host can easily spot them.  
 - There are multiple API endpoints for adding/removing users, and collecting metrics.  
 
