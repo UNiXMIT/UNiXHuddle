@@ -273,11 +273,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function assignKeys() {
         window.addEventListener('keydown', function(event) {
+            event.preventDefault();
             if (document.activeElement.tagName !== 'INPUT' && !formChanged) {
-                if (event.code === 37 ||event.key === "ArrowLeft") {
+                if (event.code === 37 || event.key === "ArrowLeft") {
                     selectPrevious();
                 }
-                if (event.code === 39 ||event.key === "ArrowRight") {
+                if (event.code === 39 || event.key === "ArrowRight") {
                     selectNext();
                 }
                 // if (event.code === 38 ||event.key === "ArrowUp") {
@@ -325,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let previousUserValue = '';
     let previousDateValue = '';
     getUsers();
-    // assignKeys();
+    assignKeys();
     let formChanged = false;
     let form = document.getElementById('metrics');
     let inputs = form.getElementsByTagName('input');
