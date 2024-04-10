@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let previousUserValue = '';
     let previousDateValue = '';
     getUsers();
-    assignKeys();
+    // assignKeys();
     let formChanged = false;
     let form = document.getElementById('metrics');
     let inputs = form.getElementsByTagName('input');
