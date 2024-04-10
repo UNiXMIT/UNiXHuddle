@@ -11,7 +11,7 @@
 <body>
     <div id="main">
     <h1>Huddle</h1>
-    <form id="userDataForm" onsubmit="return false">
+    <form id="userDataForm" onsubmit="return false" novalidate>
         <label for="userName">User:</label>
         <div id="group1">
             <i id="previous" class="fa-solid fa-caret-left"></i>
@@ -23,7 +23,7 @@
         <div id="metrics">
         <div id="group2">
             <label class="inline" for="capacity">Capacity (1-5):</label>
-            <input type="text" id="capacity"><br>
+            <input type="number" id="capacity"><br>
             <label class="inline" for="wellbeing">Wellbeing (Minutes):</label>
             <input type="number" id="wellbeing" min="0"><br>
             <label class="inline" for="upskilling">Upskilling (Minutes):</label>

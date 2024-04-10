@@ -19,10 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
         previousDateValue = document.querySelector('#date').value;
     }
 
-    function submitData(event) {
-        if (event) {
-            event.preventDefault();
-        }
+    function submitData() {
         if (formChanged) {
             for (let i = 0; i < inputs.length; i++) {
                 inputs[i].disabled = true;
@@ -40,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const goal5 = document.getElementById('goal5').value;
             const data = JSON.stringify({ userName, date, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 });
             sendData(data);
+            getDataUser();
         }
     }
 
@@ -188,24 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return local.toJSON().slice(0,10);
     }
 
-    function onInputChange(event) {
-        const input = event.target;
-        if (input.type === 'number') {
-            const currentValue = input.value;
-            const cleanedValue = currentValue.replace(/[^0-9.]/g, '');
-            input.value = cleanedValue;
-            if (!input.value) {
-                input.value = 0;
-            }
-        }
-        if (input.id === 'capacity') {
-            const currentValue = input.value;
-            const cleanedValue = currentValue.replace(/[^0-9.]/g, '');
-            input.value = cleanedValue;
-            if (!input.value) {
-                input.value = 0;
-            }
-        }
+    function onInputChange() {
         document.querySelector('#userName').disabled = true;
         document.querySelector('#date').disabled = true;
         let alertButton = document.querySelector('.submit');
@@ -214,8 +195,11 @@ document.addEventListener('DOMContentLoaded', function() {
         let discardButton = document.querySelector('.discard');
         discardButton.style.backgroundColor = '#f73333';
         discardButton.style.borderColor =  '#f73333';
-        validateMetrics();
         formChanged = true;
+    }
+
+    function onFocusChange() {
+        validateMetrics();
     }
 
     function onSavedChange() {
@@ -247,6 +231,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (capacityValue < 0) {
             document.getElementById('capacity').value = 0;
         }
+        if (isNaN(capacityValue)) {
+            document.getElementById('capacity').value = 0;
+        }
         if (capacityValue > 3) {  
             document.getElementById('capacity').style.color = '#f73333';
             document.getElementById('capacity').style.fontWeight = 'bold';          
@@ -262,6 +249,26 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('wellbeing').style.color = 'black';
             document.getElementById('wellbeing').style.fontWeight = 'normal';
         }
+        if (wellbeingValue < 0) {
+            document.getElementById('wellbeing').value = 0;
+        }
+        if (isNaN(wellbeingValue)) {
+            document.getElementById('wellbeing').value = 0;
+        }
+        let upskillingValue = parseFloat(document.getElementById('upskilling').value);
+        if (upskillingValue < 0) {
+            document.getElementById('upskilling').value = 0;
+        }
+        if (isNaN(upskillingValue)) {
+            document.getElementById('upskilling').value = 0;
+        }
+        let knowledgeValue = parseFloat(document.getElementById('knowledgeTransfer').value);
+        if (knowledgeValue < 0) {
+            document.getElementById('knowledgeTransfer').value = 0;
+        }
+        if (isNaN(knowledgeValue)) {
+            document.getElementById('knowledgeTransfer').value = 0;
+        }
     }
 
     function discardChanges() {
@@ -273,13 +280,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function assignKeys() {
         window.addEventListener('keydown', function(event) {
-            event.preventDefault();
             if (document.activeElement.tagName !== 'INPUT' && !formChanged) {
                 if (event.code === 37 || event.key === "ArrowLeft") {
                     selectPrevious();
+                    event.preventDefault()
                 }
                 if (event.code === 39 || event.key === "ArrowRight") {
                     selectNext();
+                    event.preventDefault()
                 }
                 // if (event.code === 38 ||event.key === "ArrowUp") {
                 // }
@@ -289,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    document.querySelector('#userName').addEventListener('change', function(event) {
+    document.querySelector('#userName').addEventListener('change', function() {
         if (!formChanged) {
             previousUserValue = document.querySelector('#userName').value;
             getDataUser();
@@ -307,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    document.querySelector('#date').addEventListener('change', function(event) {
+    document.querySelector('#date').addEventListener('change', function() {
         if (!formChanged) {
             previousDateValue = document.querySelector('#date').value;
             getDataUser();
@@ -332,6 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let inputs = form.getElementsByTagName('input');
     for (let i = 0; i < inputs.length; i++) {
         inputs[i].addEventListener('input', onInputChange);
+        inputs[i].addEventListener('blur', onFocusChange);
     }
     window.onbeforeunload = function() {
         if (formChanged) {
