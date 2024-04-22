@@ -10,10 +10,12 @@ app.use(express.static(__dirname));
 const db = new sqlite3.Database('huddleData.db', (err) => {
     if (err) {
         console.error(err.message);
+    } else {
+        console.log('Connected to the database.');
+        createTable();
+        createUsersTable();
+        createGroupsTable();
     }
-    console.log('Connected to the database.');
-    createTable();
-    createUsersTable();
 });
 
 function createTable() {
@@ -33,7 +35,7 @@ function createTable() {
         PRIMARY KEY (userName, date, userGroup)
     )`, (err) => {
         if (err) {
-            console.error('Error creating table:', err.message);
+            console.error('Error creating Data table:', err.message);
         } else {
             console.log('Data Table created/loaded successfully.');
         }
@@ -47,9 +49,22 @@ function createUsersTable() {
         PRIMARY KEY (userName, userGroup)
     )`, (err) => {
         if (err) {
-            console.error('Error creating table:', err.message);
+            console.error('Error creating Users table:', err.message);
         } else {
             console.log('Users Table created/loaded successfully.');
+        }
+    });
+}
+
+function createGroupsTable() {
+    db.run(`CREATE TABLE IF NOT EXISTS huddleGroups (
+        userGroup TEXT NOT NULL PRIMARY KEY,
+		userGroupName TEXT NOT NULL
+    )`, (err) => {
+        if (err) {
+            console.error('Error creating Groups table:', err.message);
+        } else {
+            console.log('Groups Table created/loaded successfully.');
         }
     });
 }
@@ -89,6 +104,59 @@ app.get('/load', (req, res) => {
             }
         }
     });
+});
+
+app.use('/groups', async (req, res) => {
+    if (req.method === 'GET') {
+        db.all("SELECT * FROM huddleGroups ORDER BY userGroupName ASC", (err, rows) => {
+            if (err) {
+                res.status(500).json({ error: err.message });
+                return;
+            } else {
+                res.json(rows);
+            }
+        });
+    } else if (req.method === 'POST') {
+        const data = req.body;
+        try {
+            for (const obj of data) {
+                await new Promise((resolve, reject) => {
+                    db.run('INSERT OR REPLACE INTO huddleGroups (userGroup, userGroupName) VALUES (?, ?)', [obj.userGroup, obj.userGroupName], (err) => {
+                        if (err) {
+                            console.error(err);
+                            reject(err);
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
+            }
+            res.sendStatus(200);
+        } catch (err) {
+            res.status(500).send('Error adding group(s)');
+        }
+    } else if (req.method === 'DELETE') {
+        const data = req.body;
+        try {
+            for (const obj of data) {
+                await new Promise((resolve, reject) => {
+                    db.run('DELETE FROM huddleGroups WHERE userGroup = ?', obj.userGroup, (err) => {
+                        if (err) {
+                            console.error(err);
+                            reject(err);
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
+            }
+            res.sendStatus(200);
+        } catch (err) {
+            res.status(500).send('Error deleting group');
+        }
+    } else {
+        res.status(405).send('Method Not Allowed');
+    }
 });
 
 app.use('/users', (req, res) => {

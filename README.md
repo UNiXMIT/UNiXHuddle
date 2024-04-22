@@ -73,11 +73,52 @@ podman logs huddle
 ```
 
 ## Huddle API
+### Get Group(s)
+GET /groups  
+cURL Example:    
+```
+curl --request GET --url https://example.com:3000/groups
+```
+Response:  
+```
+[{ "userGroup": "SW", "userGroupName": "Star Wars" }]
+```
+
+### Add Group(s)
+POST /groups  
+```
+[{ "userGroup": "SW", "userGroupName": "Star Wars" }]
+```
+cURL Example:  
+```
+curl --request POST \
+  --url https://example.com:3000/groups \
+  --header 'Content-Type: application/json' \
+  --data '[{
+    "userGroup": "SW", "userGroupName": "Star Wars"
+  }]'
+```
+
+### Delete Group(s)
+DELETE /groups  
+```
+[{ "userGroup": "SW", "userGroupName": "Star Wars" }]
+```
+cURL Example:  
+```
+curl --request DELETE \
+  --url https://example.com:3000/groups \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "userGroup": "SW", "userGroupName": "Star Wars"
+  }'
+```
+
 ### Get User(s)
 GET /users  
 cURL Example:  
 ```
-curl --request GET --url https://example.com:3000/users?userGroup=default
+curl --request GET --url https://example.com:3000/users?userGroup=SW
 ```
 Response:
 ```
@@ -91,7 +132,7 @@ POST /users
 ```
 {
   "userNames": ["Han Solo", "Darth Vader"],
-  "userGroup": "default"
+  "userGroup": "SW"
 }
 ```
 cURL Example:  
@@ -101,7 +142,7 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
     "userNames": ["Han Solo", "Darth Vader"],
-    "userGroup": "default"
+    "userGroup": "SW"
   }'
 ```
 
@@ -110,7 +151,7 @@ DELETE /users
 ```
 {
   "userNames": ["Han Solo", "Darth Vader"],
-  "userGroup": "default"
+  "userGroup": "SW"
 }
 ```
 cURL Example:  
@@ -120,14 +161,14 @@ curl --request DELETE \
   --header 'Content-Type: application/json' \
   --data '{
     "userNames": ["Han Solo", "Darth Vader"],
-    "userGroup": "default"
+    "userGroup": "SW"
   }'
 ```
 
 ### Get Metrics
 GET /metrics
 ```
-http://example.com:3000/metrics?userGroup=default&start=2024-01-28&end=2024-02-28
+http://example.com:3000/metrics?userGroup=SW&start=2024-01-28&end=2024-02-28
 ```
 To get this data directly into Excel:  
 1. Open Excel Desktop.  

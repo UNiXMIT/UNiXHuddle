@@ -1,7 +1,23 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+    function getGroups() {
+        fetch('/groups')
+        .then(response => response.json())
+        .then(data => {
+            const selectBox = document.getElementById('userGroup');
+            data.forEach(data => {
+                const option = document.createElement('option');
+                option.value = data.userGroup;
+                option.text = data.userGroupName;
+                selectBox.appendChild(option);
+            });
+            getUsers();
+        })
+        .catch(error => console.error('Error fetching names:', error));
+    }
+
     function getUsers() {
-        const userGroup = document.querySelector('#userGroup').innerText;
+        const userGroup = document.querySelector('#userGroup').value;
         fetch(`/users?userGroup=${userGroup}`)
         .then(response => response.json())
         .then(data => {
@@ -27,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             const userName = document.getElementById('userName').value;
             const date = document.getElementById('date').value;
-            const userGroup = document.querySelector('#userGroup').innerText;
+            const userGroup = document.querySelector('#userGroup').value;
             const capacity = document.getElementById('capacity').value;
             const wellbeing = document.getElementById('wellbeing').value;
             const upskilling = document.getElementById('upskilling').value;
@@ -107,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async function getDataUser() {
         const userName = document.getElementById('userName').value;
         const date = document.getElementById('date').value;
-        const userGroup = document.querySelector('#userGroup').innerText;
+        const userGroup = document.querySelector('#userGroup').value;
         if (userName && date && userGroup) {
             await fetch(`/load?userName=${userName}&date=${date}&userGroup=${userGroup}`)
             .then(response => response.json())
@@ -190,6 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function onInputChange() {
+        document.querySelector('#userGroup').disabled = true;
         document.querySelector('#userName').disabled = true;
         document.querySelector('#date').disabled = true;
         let alertButton = document.querySelector('.submit');
@@ -206,6 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function onSavedChange() {
+        document.querySelector('#userGroup').disabled = false;
         document.querySelector('#userName').disabled = false;
         document.querySelector('#date').disabled = false;
         let alertButton = document.querySelector('.submit');
@@ -300,6 +318,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    document.querySelector('#userGroup').addEventListener('change', function() {
+        if (!formChanged) {
+            document.querySelector('#userName').innerHTML = "";
+            getUsers();
+        }
+    });
+
     document.querySelector('#userName').addEventListener('change', function() {
         if (!formChanged) {
             previousUserValue = document.querySelector('#userName').value;
@@ -336,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#previous').style.visibility = 'hidden';
     let previousUserValue = '';
     let previousDateValue = '';
-    getUsers();
+    getGroups();
     assignKeys();
     let formChanged = false;
     let form = document.getElementById('metrics');
