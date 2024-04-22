@@ -22,6 +22,9 @@ h1:after {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+#userGroup {
+    display: none;
+}
 label {
     font-family: "Roboto", sans-serif;
     font-weight: 700;

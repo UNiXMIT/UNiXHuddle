@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     function getUsers() {
-        fetch('/users')
+        const userGroup = document.querySelector('#userGroup').innerText;
+        fetch(`/users?userGroup=${userGroup}`)
         .then(response => response.json())
         .then(data => {
             const selectBox = document.getElementById('userName');
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             const userName = document.getElementById('userName').value;
             const date = document.getElementById('date').value;
+            const userGroup = document.querySelector('#userGroup').innerText;
             const capacity = document.getElementById('capacity').value;
             const wellbeing = document.getElementById('wellbeing').value;
             const upskilling = document.getElementById('upskilling').value;
@@ -35,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const goal3 = document.getElementById('goal3').value;
             const goal4 = document.getElementById('goal4').value;
             const goal5 = document.getElementById('goal5').value;
-            const data = JSON.stringify({ userName, date, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 });
+            const data = JSON.stringify({ userName, date, userGroup, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 });
             sendData(data);
             getDataUser();
         }
@@ -105,8 +107,9 @@ document.addEventListener('DOMContentLoaded', function() {
     async function getDataUser() {
         const userName = document.getElementById('userName').value;
         const date = document.getElementById('date').value;
-        if (userName && date) {
-            await fetch(`/load?userName=${userName}&date=${date}`)
+        const userGroup = document.querySelector('#userGroup').innerText;
+        if (userName && date && userGroup) {
+            await fetch(`/load?userName=${userName}&date=${date}&userGroup=${userGroup}`)
             .then(response => response.json())
             .then(data => {
                 populateForm(data);

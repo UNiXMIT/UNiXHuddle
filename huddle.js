@@ -20,6 +20,7 @@ function createTable() {
     db.run(`CREATE TABLE IF NOT EXISTS huddleData (
         userName TEXT NOT NULL,
         date DATE NOT NULL,
+        userGroup TEXT NOT NULL,
         capacity INTEGER,
         wellbeing INTEGER,
         upskilling INTEGER,
@@ -29,7 +30,7 @@ function createTable() {
         goal3 TEXT,
         goal4 TEXT,
         goal5 TEXT,
-        PRIMARY KEY (userName, date)
+        PRIMARY KEY (userName, date, userGroup)
     )`, (err) => {
         if (err) {
             console.error('Error creating table:', err.message);
@@ -41,7 +42,9 @@ function createTable() {
 
 function createUsersTable() {
     db.run(`CREATE TABLE IF NOT EXISTS huddleUsers (
-        userName TEXT PRIMARY KEY
+        userName TEXT NOT NULL,
+        userGroup TEXT NOT NULL,
+        PRIMARY KEY (userName, userGroup)
     )`, (err) => {
         if (err) {
             console.error('Error creating table:', err.message);
@@ -55,9 +58,9 @@ app.post('/submit', (req, res) => {
     if (req.method !== 'POST') {
         return res.status(405).send('Method Not Allowed');
     }
-    const { userName, date, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 } = req.body;
-    db.run('INSERT OR REPLACE INTO huddleData (userName, date, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [userName, date, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5],
+    const { userName, date, userGroup, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 } = req.body;
+    db.run('INSERT OR REPLACE INTO huddleData (userName, date, userGroup, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [userName, date, userGroup, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5],
         (err) => {
             if (err) {
                 console.error(err);
@@ -73,8 +76,8 @@ app.get('/load', (req, res) => {
     if (req.method !== 'GET') {
         return res.status(405).send('Method Not Allowed');
     }
-    const { userName, date } = req.query;
-    db.get('SELECT * FROM huddleData WHERE userName = ? AND date = ?', [userName, date], (err, row) => {
+    const { userName, date, userGroup } = req.query;
+    db.get('SELECT * FROM huddleData WHERE userName = ? AND date = ? AND userGroup = ?', [userName, date, userGroup], (err, row) => {
         if (err) {
             console.error(err.message);
             res.sendStatus(500);
@@ -90,12 +93,13 @@ app.get('/load', (req, res) => {
 
 app.use('/users', (req, res) => {
     if (req.method === 'POST') {
-        const { userNames } = req.body;
+        const { userNames, userGroup } = req.body;
         if (!Array.isArray(userNames) || userNames.length === 0) {
             return res.status(400).send('Invalid request format. Please provide an array of usernames.');
         }
-        const placeholders = userNames.map(() => '(?)').join(', ');
-        db.run(`INSERT OR REPLACE INTO huddleUsers (userName) VALUES ${placeholders}`, userNames,
+        const placeholders = userNames.map(() => '(?, ?)').join(', ');
+        const values = userNames.flatMap(name => [name.trim(), userGroup]);
+        db.run(`INSERT OR REPLACE INTO huddleUsers (userName, userGroup) VALUES ${placeholders}`, values,
             (err) => {
                 if (err) {
                     console.error(err);
@@ -106,12 +110,12 @@ app.use('/users', (req, res) => {
             }
         );
     } else if (req.method === 'DELETE') {
-        const { userNames } = req.body;
+        const { userNames, userGroup } = req.body;
         if (!Array.isArray(userNames) || userNames.length === 0) {
             return res.status(400).send('Invalid request format. Please provide an array of usernames.');
         }
         const placeholders = userNames.map(() => '?').join(', ');
-        db.run(`DELETE FROM huddleUsers WHERE userName IN (${placeholders})`, userNames,
+        db.run(`DELETE FROM huddleUsers WHERE userName IN (${placeholders}) AND userGroup = ?`, [...userNames, userGroup],
             (err) => {
                 if (err) {
                     console.error(err);
@@ -122,7 +126,8 @@ app.use('/users', (req, res) => {
             }
         );
     } else if (req.method === 'GET') {
-        db.all("SELECT * FROM huddleUsers ORDER BY userName ASC", (err, rows) => {
+        const { userGroup } = req.query;
+        db.all("SELECT * FROM huddleUsers WHERE userGroup = ? ORDER BY userName ASC", userGroup, (err, rows) => {
             if (err) {
                 res.status(500).json({ error: err.message });
                 return;
@@ -138,8 +143,8 @@ app.use('/users', (req, res) => {
 
 app.use('/metrics', (req, res) => {
     if (req.method === 'GET') {
-        const { start, end } = req.query;
-        db.all('SELECT * FROM huddleData WHERE date BETWEEN ? AND ?;', [start, end], (err, rows) => {
+        const { userGroup, start, end } = req.query;
+        db.all('SELECT * FROM huddleData WHERE userGroup = ? AND date BETWEEN ? AND ?;', [userGroup, start, end], (err, rows) => {
             if (err) {
                 console.error(err.message);
                 res.sendStatus(500);
