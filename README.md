@@ -55,7 +55,6 @@ http://serverIP:3000
 
 ## Customization
 To set a custom the name for the Huddle, modify the ``<title>`` and ``<h1>`` tag values in the index.html file.  
-If hosting multiple huddle sites, change the value in the ``<p>`` tag that has the ID 'userGroup', from default to a unique value, for each huddle site.  
 To modify the port that Huddle uses on the host, modify line 8 of the huddle.sh file before running it, where 'xxxx' is an available port on the host machine to use.    
 ```
 -p xxxx:3000

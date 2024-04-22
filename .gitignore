@@ -2,3 +2,4 @@ node_modules/
 huddleData.db
 package-lock.json
 *.sql
+*.py
