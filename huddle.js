@@ -152,7 +152,7 @@ app.use('/groups', async (req, res) => {
             }
             res.sendStatus(200);
         } catch (err) {
-            res.status(500).send('Error deleting group');
+            res.status(500).send('Error deleting group(s)');
         }
     } else {
         res.status(405).send('Method Not Allowed');
