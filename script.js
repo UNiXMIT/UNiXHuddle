@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('goal3').value = data.goal3 || '';
             document.getElementById('goal4').value = data.goal4 || '';
             document.getElementById('goal5').value = data.goal5 || '';
-            validateMetrics()
+            validateMetrics();
         } else {
             resetForm();
         }
@@ -304,11 +304,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (document.activeElement.tagName !== 'INPUT' && !formChanged) {
                 if (event.code === 37 || event.key === "ArrowLeft") {
                     selectPrevious();
-                    event.preventDefault()
+                    event.preventDefault();
                 }
                 if (event.code === 39 || event.key === "ArrowRight") {
                     selectNext();
-                    event.preventDefault()
+                    event.preventDefault();
                 }
                 // if (event.code === 38 ||event.key === "ArrowUp") {
                 // }
@@ -318,10 +318,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    document.querySelector('#userTeam').addEventListener('change', function() {
+    document.querySelector('#userTeam').addEventListener('change', async function() {
         if (!formChanged) {
             document.querySelector('#userName').innerHTML = "";
             getUsers();
+            await sleep(100);
+            checkUserList();
         }
     });
 
@@ -329,7 +331,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!formChanged) {
             previousUserValue = document.querySelector('#userName').value;
             getDataUser();
+            checkUserList();
         }
+        
+    });
+
+    function checkUserList() {
         let select = document.getElementById('userName');
         if (select.selectedIndex === select.options.length - 1) {
             document.querySelector('#next').style.visibility = 'hidden';
@@ -341,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('#next').style.visibility = 'visible';
             document.querySelector('#previous').style.visibility = 'visible';
         }
-    });
+    }
 
     document.querySelector('#date').addEventListener('change', function() {
         if (!formChanged) {
