@@ -14,7 +14,7 @@ const db = new sqlite3.Database('huddleData.db', (err) => {
         console.log('Connected to the database.');
         createTable();
         createUsersTable();
-        createGroupsTable();
+        createTeamsTable();
     }
 });
 
@@ -22,7 +22,7 @@ function createTable() {
     db.run(`CREATE TABLE IF NOT EXISTS huddleData (
         userName TEXT NOT NULL,
         date DATE NOT NULL,
-        userGroup TEXT NOT NULL,
+        userTeam TEXT NOT NULL,
         capacity INTEGER,
         wellbeing INTEGER,
         upskilling INTEGER,
@@ -32,7 +32,7 @@ function createTable() {
         goal3 TEXT,
         goal4 TEXT,
         goal5 TEXT,
-        PRIMARY KEY (userName, date, userGroup)
+        PRIMARY KEY (userName, date, userTeam)
     )`, (err) => {
         if (err) {
             console.error('Error creating Data table:', err.message);
@@ -45,8 +45,8 @@ function createTable() {
 function createUsersTable() {
     db.run(`CREATE TABLE IF NOT EXISTS huddleUsers (
         userName TEXT NOT NULL,
-        userGroup TEXT NOT NULL,
-        PRIMARY KEY (userName, userGroup)
+        userTeam TEXT NOT NULL,
+        PRIMARY KEY (userName, userTeam)
     )`, (err) => {
         if (err) {
             console.error('Error creating Users table:', err.message);
@@ -56,15 +56,15 @@ function createUsersTable() {
     });
 }
 
-function createGroupsTable() {
-    db.run(`CREATE TABLE IF NOT EXISTS huddleGroups (
-        userGroup TEXT NOT NULL PRIMARY KEY,
-		userGroupName TEXT NOT NULL
+function createTeamsTable() {
+    db.run(`CREATE TABLE IF NOT EXISTS huddleTeams (
+        userTeam TEXT NOT NULL PRIMARY KEY,
+		userTeamName TEXT NOT NULL
     )`, (err) => {
         if (err) {
-            console.error('Error creating Groups table:', err.message);
+            console.error('Error creating Teams table:', err.message);
         } else {
-            console.log('Groups Table created/loaded successfully.');
+            console.log('Teams Table created/loaded successfully.');
         }
     });
 }
@@ -73,9 +73,9 @@ app.post('/submit', (req, res) => {
     if (req.method !== 'POST') {
         return res.status(405).send('Method Not Allowed');
     }
-    const { userName, date, userGroup, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 } = req.body;
-    db.run('INSERT OR REPLACE INTO huddleData (userName, date, userGroup, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [userName, date, userGroup, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5],
+    const { userName, date, userTeam, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 } = req.body;
+    db.run('INSERT OR REPLACE INTO huddleData (userName, date, userTeam, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [userName, date, userTeam, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5],
         (err) => {
             if (err) {
                 console.error(err);
@@ -91,8 +91,8 @@ app.get('/load', (req, res) => {
     if (req.method !== 'GET') {
         return res.status(405).send('Method Not Allowed');
     }
-    const { userName, date, userGroup } = req.query;
-    db.get('SELECT * FROM huddleData WHERE userName = ? AND date = ? AND userGroup = ?', [userName, date, userGroup], (err, row) => {
+    const { userName, date, userTeam } = req.query;
+    db.get('SELECT * FROM huddleData WHERE userName = ? AND date = ? AND userTeam = ?', [userName, date, userTeam], (err, row) => {
         if (err) {
             console.error(err.message);
             res.sendStatus(500);
@@ -106,9 +106,9 @@ app.get('/load', (req, res) => {
     });
 });
 
-app.use('/groups', async (req, res) => {
+app.use('/teams', async (req, res) => {
     if (req.method === 'GET') {
-        db.all("SELECT * FROM huddleGroups ORDER BY userGroupName ASC", (err, rows) => {
+        db.all("SELECT * FROM huddleTeams ORDER BY userTeamName ASC", (err, rows) => {
             if (err) {
                 res.status(500).json({ error: err.message });
                 return;
@@ -121,7 +121,7 @@ app.use('/groups', async (req, res) => {
         try {
             for (const obj of data) {
                 await new Promise((resolve, reject) => {
-                    db.run('INSERT OR REPLACE INTO huddleGroups (userGroup, userGroupName) VALUES (?, ?)', [obj.userGroup, obj.userGroupName], (err) => {
+                    db.run('INSERT OR REPLACE INTO huddleTeams (userTeam, userTeamName) VALUES (?, ?)', [obj.userTeam, obj.userTeamName], (err) => {
                         if (err) {
                             console.error(err);
                             reject(err);
@@ -133,14 +133,14 @@ app.use('/groups', async (req, res) => {
             }
             res.sendStatus(200);
         } catch (err) {
-            res.status(500).send('Error adding group(s)');
+            res.status(500).send('Error adding team(s)');
         }
     } else if (req.method === 'DELETE') {
         const data = req.body;
         try {
             for (const obj of data) {
                 await new Promise((resolve, reject) => {
-                    db.run('DELETE FROM huddleGroups WHERE userGroup = ?', obj.userGroup, (err) => {
+                    db.run('DELETE FROM huddleTeams WHERE userTeam = ?', obj.userTeam, (err) => {
                         if (err) {
                             console.error(err);
                             reject(err);
@@ -152,7 +152,7 @@ app.use('/groups', async (req, res) => {
             }
             res.sendStatus(200);
         } catch (err) {
-            res.status(500).send('Error deleting group(s)');
+            res.status(500).send('Error deleting team(s)');
         }
     } else {
         res.status(405).send('Method Not Allowed');
@@ -161,13 +161,13 @@ app.use('/groups', async (req, res) => {
 
 app.use('/users', (req, res) => {
     if (req.method === 'POST') {
-        const { userNames, userGroup } = req.body;
+        const { userNames, userTeam } = req.body;
         if (!Array.isArray(userNames) || userNames.length === 0) {
             return res.status(400).send('Invalid request format. Please provide an array of usernames.');
         }
         const placeholders = userNames.map(() => '(?, ?)').join(', ');
-        const values = userNames.flatMap(name => [name.trim(), userGroup]);
-        db.run(`INSERT OR REPLACE INTO huddleUsers (userName, userGroup) VALUES ${placeholders}`, values,
+        const values = userNames.flatMap(name => [name.trim(), userTeam]);
+        db.run(`INSERT OR REPLACE INTO huddleUsers (userName, userTeam) VALUES ${placeholders}`, values,
             (err) => {
                 if (err) {
                     console.error(err);
@@ -178,12 +178,12 @@ app.use('/users', (req, res) => {
             }
         );
     } else if (req.method === 'DELETE') {
-        const { userNames, userGroup } = req.body;
+        const { userNames, userTeam } = req.body;
         if (!Array.isArray(userNames) || userNames.length === 0) {
             return res.status(400).send('Invalid request format. Please provide an array of usernames.');
         }
         const placeholders = userNames.map(() => '?').join(', ');
-        db.run(`DELETE FROM huddleUsers WHERE userName IN (${placeholders}) AND userGroup = ?`, [...userNames, userGroup],
+        db.run(`DELETE FROM huddleUsers WHERE userName IN (${placeholders}) AND userTeam = ?`, [...userNames, userTeam],
             (err) => {
                 if (err) {
                     console.error(err);
@@ -194,8 +194,8 @@ app.use('/users', (req, res) => {
             }
         );
     } else if (req.method === 'GET') {
-        const { userGroup } = req.query;
-        db.all("SELECT * FROM huddleUsers WHERE userGroup = ? ORDER BY userName ASC", userGroup, (err, rows) => {
+        const { userTeam } = req.query;
+        db.all("SELECT * FROM huddleUsers WHERE userTeam = ? ORDER BY userName ASC", userTeam, (err, rows) => {
             if (err) {
                 res.status(500).json({ error: err.message });
                 return;
@@ -211,8 +211,8 @@ app.use('/users', (req, res) => {
 
 app.use('/metrics', (req, res) => {
     if (req.method === 'GET') {
-        const { userGroup, start, end } = req.query;
-        db.all('SELECT * FROM huddleData WHERE userGroup = ? AND date BETWEEN ? AND ?;', [userGroup, start, end], (err, rows) => {
+        const { userTeam, start, end } = req.query;
+        db.all('SELECT * FROM huddleData WHERE userTeam = ? AND date BETWEEN ? AND ?;', [userTeam, start, end], (err, rows) => {
             if (err) {
                 console.error(err.message);
                 res.sendStatus(500);

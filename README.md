@@ -72,44 +72,44 @@ podman logs huddle
 ```
 
 ## Huddle API
-### Get Group(s)
-GET /groups  
+### Get Team(s)
+GET /teams   
 cURL Example:    
 ```
-curl --request GET --url https://example.com:3000/groups
+curl --request GET --url https://example.com:3000/teams
 ```
 Response:  
 ```
-[{ "userGroup": "SW", "userGroupName": "Star Wars" }]
+[{ "userTeam": "SW", "userTeamName": "Star Wars" }]
 ```
 
-### Add Group(s)
-POST /groups  
+### Add Team(s)
+POST /teams  
 ```
-[{ "userGroup": "SW", "userGroupName": "Star Wars" }]
+[{ "userTeam": "SW", "userTeamName": "Star Wars" }]
 ```
 cURL Example:  
 ```
 curl --request POST \
-  --url https://example.com:3000/groups \
+  --url https://example.com:3000/teams \
   --header 'Content-Type: application/json' \
   --data '[{
-    "userGroup": "SW", "userGroupName": "Star Wars"
+    "userTeam": "SW", "userTeamName": "Star Wars"
   }]'
 ```
 
-### Delete Group(s)
-DELETE /groups  
+### Delete Team(s)
+DELETE /teams  
 ```
-[{ "userGroup": "SW", "userGroupName": "Star Wars" }]
+[{ "userTeam": "SW", "userTeamName": "Star Wars" }]
 ```
 cURL Example:  
 ```
 curl --request DELETE \
-  --url https://example.com:3000/groups \
+  --url https://example.com:3000/teams \
   --header 'Content-Type: application/json' \
   --data '{
-    "userGroup": "SW", "userGroupName": "Star Wars"
+    "userTeam": "SW", "userTeamName": "Star Wars"
   }'
 ```
 
@@ -117,7 +117,7 @@ curl --request DELETE \
 GET /users  
 cURL Example:  
 ```
-curl --request GET --url https://example.com:3000/users?userGroup=SW
+curl --request GET --url https://example.com:3000/users?userTeam=SW
 ```
 Response:
 ```
@@ -131,7 +131,7 @@ POST /users
 ```
 {
   "userNames": ["Han Solo", "Darth Vader"],
-  "userGroup": "SW"
+  "userTeam": "SW"
 }
 ```
 cURL Example:  
@@ -141,7 +141,7 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
     "userNames": ["Han Solo", "Darth Vader"],
-    "userGroup": "SW"
+    "userTeam": "SW"
   }'
 ```
 
@@ -150,7 +150,7 @@ DELETE /users
 ```
 {
   "userNames": ["Han Solo", "Darth Vader"],
-  "userGroup": "SW"
+  "userTeam": "SW"
 }
 ```
 cURL Example:  
@@ -160,14 +160,14 @@ curl --request DELETE \
   --header 'Content-Type: application/json' \
   --data '{
     "userNames": ["Han Solo", "Darth Vader"],
-    "userGroup": "SW"
+    "userTeam": "SW"
   }'
 ```
 
 ### Get Metrics
 GET /metrics
 ```
-http://example.com:3000/metrics?userGroup=SW&start=2024-01-28&end=2024-02-28
+http://example.com:3000/metrics?userTeam=SW&start=2024-01-28&end=2024-02-28
 ```
 To get this data directly into Excel:  
 1. Open Excel Desktop.  
