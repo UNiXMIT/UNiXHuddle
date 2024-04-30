@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!formChanged) {
             document.querySelector('#userName').innerHTML = "";
             getUsers();
-            await sleep(100);
+            await sleep(500);
             checkUserList();
         }
     });
