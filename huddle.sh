@@ -43,7 +43,6 @@ startContainer() {
     sudo ${containerRuntime} run -d --name ${containerName} "${runOptions[@]}" ${containerRepo} 
 }
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 checkContainerRuntime
 removeContainer
 buildContainer
