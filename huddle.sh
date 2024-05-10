@@ -33,6 +33,11 @@ removeContainer() {
     fi
 }
 
+updateContainer() {
+    printf "Updating Container...\n\n"
+    sudo ${containerRuntime} pull ${containerRepo}
+}
+
 buildContainer() {
     printf "Building Container...\n\n"
     sudo ${containerRuntime} build --tag ${containerRepo} -f Dockerfile
@@ -45,5 +50,8 @@ startContainer() {
 
 checkContainerRuntime
 removeContainer
+if [[ $1 == 'update' ]]; then
+    updateContainer
+fi
 buildContainer
 startContainer
