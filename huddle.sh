@@ -35,12 +35,13 @@ removeContainer() {
 
 updateContainer() {
     printf "Updating Container...\n\n"
-    sudo ${containerRuntime} pull ${containerRepo}
+    sudo ${containerRuntime} pull node
 }
 
 buildContainer() {
     printf "Building Container...\n\n"
-    sudo ${containerRuntime} build --tag ${containerRepo} -f Dockerfile
+    curl -0 $(dirname "$0")/huddle/Dockerfile https://raw.githubusercontent.com/UNiXMIT/UNiXHuddle/master/Dockerfile
+    sudo ${containerRuntime} build --tag ${containerRepo} -f $(dirname "$0")/huddle/Dockerfile
 }
 
 startContainer() {
