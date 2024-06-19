@@ -40,7 +40,7 @@ updateContainer() {
 
 buildContainer() {
     printf "Building Container...\n\n"
-    curl -0 $(dirname "$0")/huddle/Dockerfile https://raw.githubusercontent.com/UNiXMIT/UNiXHuddle/master/Dockerfile
+    curl -o $(dirname "$0")/huddle/Dockerfile https://raw.githubusercontent.com/UNiXMIT/UNiXHuddle/master/Dockerfile
     sudo ${containerRuntime} build --tag ${containerRepo} -f $(dirname "$0")/huddle/Dockerfile
 }
 
