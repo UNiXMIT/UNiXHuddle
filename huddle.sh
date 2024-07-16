@@ -5,7 +5,7 @@ containerRepo=mf/huddle
 runOptions=(
 -v /home/support/huddle:/home/node/huddle
 -e DB_USER=postgres
--e DP_PASSWORD=strongPassword123
+-e DB_PASSWORD=strongPassword123
 -e DB_HOST=example.com
 -e DB_PORT=5432
 -e DB_DATABASE=huddle
