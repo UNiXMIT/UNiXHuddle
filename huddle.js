@@ -3,7 +3,7 @@ const { Pool } = require("pg");
 require('dotenv').config();
 
 const app = express();
-const PORT = 3000;
+const port = 3000;
 
 app.use(express.json());
 app.use(express.static(__dirname));
@@ -290,6 +290,6 @@ app.use("/metrics", (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
 });
