@@ -13,12 +13,12 @@
 
 ## Overview
 A Team Huddle site where teams can submit metrics ready for a Daily Huddle discussion.  
-Built with HTML, Javascript, Node.js, Express and SQLite.  
-Data is written, using SQLite, to a file called huddleData.db. It contains a table for Huddle metrics, called huddleData, and a table for Huddle users, called huddleUsers.  
+Built with HTML, Javascript, Node.js, Express.   
+Data is written to a PostgreSQL database.  
 
 ## Features
 - Users can select their user and a date then enter their metrics for that day.  
-- Data is pulled from the SQLite when a user changes the user or date in the form.  
+- Data is pulled from the PostgreSQL when a user changes the user or date in the form.  
 - The Huddle host can navigate through the user list using the arrows in the form or with the keyboard left and right arrow keys.   
 - If a users capacity is greater than 3 or their wellbeing is 30 minutes or less, those metrics will appear as red and bold so the Huddle host can easily spot them.  
 - There are multiple API endpoints for adding/removing users, and collecting metrics.  
@@ -39,6 +39,7 @@ Standard_B2ls_v2
 20GB SSD  
 
 ## Install Instructions
+You need to modify the huddle.sh file to change the host directory. Also change the values for the DB_* environment variables.  
 ```
 mkdir /home/support/huddle
 git clone https://github.com/UNiXMIT/UNiXHuddle.git /home/support/huddle
@@ -60,12 +61,6 @@ To modify the port that Huddle uses on the host, modify line 8 of the huddle.sh 
 -p xxxx:3000
 ```
 
-## Backup Huddle
-The Huddle huddleData.db file is mapped onto the host in the following location:  
-```
-/home/support/huddle/huddleData.db
-```
-
 ## Check Huddle Logs
 ```
 podman logs huddle
@@ -80,13 +75,13 @@ curl --request GET --url https://example.com:3000/teams
 ```
 Response:  
 ```
-[{ "userTeam": "SW", "userTeamName": "Star Wars" }]
+[{ "userteam": "SW", "userteamname": "Star Wars" }]
 ```
 
 ### Add Team(s)
 POST /teams  
 ```
-[{ "userTeam": "SW", "userTeamName": "Star Wars" }]
+[{ "userteam": "SW", "userteamname": "Star Wars" }]
 ```
 cURL Example:  
 ```
@@ -94,14 +89,14 @@ curl --request POST \
   --url https://example.com:3000/teams \
   --header 'Content-Type: application/json' \
   --data '[{
-    "userTeam": "SW", "userTeamName": "Star Wars"
+    "userteam": "SW", "userteamname": "Star Wars"
   }]'
 ```
 
 ### Delete Team(s)
 DELETE /teams  
 ```
-[{ "userTeam": "SW", "userTeamName": "Star Wars" }]
+[{ "userteam": "SW", "userteamname": "Star Wars" }]
 ```
 cURL Example:  
 ```
@@ -109,7 +104,7 @@ curl --request DELETE \
   --url https://example.com:3000/teams \
   --header 'Content-Type: application/json' \
   --data '{
-    "userTeam": "SW", "userTeamName": "Star Wars"
+    "userteam": "SW", "userteamname": "Star Wars"
   }'
 ```
 
@@ -117,12 +112,12 @@ curl --request DELETE \
 GET /users  
 cURL Example:  
 ```
-curl --request GET --url https://example.com:3000/users?userTeam=SW
+curl --request GET --url https://example.com:3000/users?userteam=SW
 ```
 Response:
 ```
 {
-  "userNames": ["Han Solo", "Darth Vader"]
+  "usernames": ["Han Solo", "Darth Vader"]
 }
 ```
 
@@ -130,8 +125,8 @@ Response:
 POST /users  
 ```
 {
-  "userNames": ["Han Solo", "Darth Vader"],
-  "userTeam": "SW"
+  "usernames": ["Han Solo", "Darth Vader"],
+  "userteam": "SW"
 }
 ```
 cURL Example:  
@@ -140,8 +135,8 @@ curl --request POST \
   --url https://example.com:3000/users \
   --header 'Content-Type: application/json' \
   --data '{
-    "userNames": ["Han Solo", "Darth Vader"],
-    "userTeam": "SW"
+    "usernames": ["Han Solo", "Darth Vader"],
+    "userteam": "SW"
   }'
 ```
 
@@ -149,8 +144,8 @@ curl --request POST \
 DELETE /users  
 ```
 {
-  "userNames": ["Han Solo", "Darth Vader"],
-  "userTeam": "SW"
+  "usernames": ["Han Solo", "Darth Vader"],
+  "userteam": "SW"
 }
 ```
 cURL Example:  
@@ -159,15 +154,15 @@ curl --request DELETE \
   --url https://example.com:3000/users \
   --header 'Content-Type: application/json' \
   --data '{
-    "userNames": ["Han Solo", "Darth Vader"],
-    "userTeam": "SW"
+    "usernames": ["Han Solo", "Darth Vader"],
+    "userteam": "SW"
   }'
 ```
 
 ### Get Metrics
 GET /metrics
 ```
-http://example.com:3000/metrics?userTeam=SW&start=2024-01-28&end=2024-02-28
+http://example.com:3000/metrics?userteam=SW&start=2024-01-28&end=2024-02-28
 ```
 To get this data directly into Excel:  
 1. Open Excel Desktop.  

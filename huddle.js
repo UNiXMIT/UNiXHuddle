@@ -1,5 +1,6 @@
-const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const express = require("express");
+const { Pool } = require("pg");
+require('dotenv').config();
 
 const app = express();
 const PORT = 3000;
@@ -7,226 +8,286 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const db = new sqlite3.Database('huddleData.db', (err) => {
-    if (err) {
-        console.error(err.message);
-    } else {
-        console.log('Connected to the database.');
-        createTable();
-        createUsersTable();
-        createTeamsTable();
-    }
+const pool = new Pool({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
 });
 
-function createTable() {
-    db.run(`CREATE TABLE IF NOT EXISTS huddleData (
-        userName TEXT NOT NULL,
+pool.connect((err, client, done) => {
+  if (err) {
+    console.error("Error connecting to the database:", err.message);
+  } else {
+    console.log("Connected to the PostgreSQL database.");
+    createTable(client);
+    createUsersTable(client);
+    createTeamsTable(client);
+  }
+});
+
+function createTable(client) {
+  client.query(
+    `CREATE TABLE IF NOT EXISTS huddledata (
+        username TEXT NOT NULL,
         date DATE NOT NULL,
-        userTeam TEXT NOT NULL,
+        userteam TEXT NOT NULL,
         capacity INTEGER,
         wellbeing INTEGER,
         upskilling INTEGER,
-        knowledgeTransfer INTEGER,
+        knowledgetransfer INTEGER,
         goal1 TEXT,
         goal2 TEXT,
         goal3 TEXT,
         goal4 TEXT,
         goal5 TEXT,
-        PRIMARY KEY (userName, date, userTeam)
-    )`, (err) => {
-        if (err) {
-            console.error('Error creating Data table:', err.message);
-        } else {
-            console.log('Data Table created/loaded successfully.');
-        }
-    });
-}
-
-function createUsersTable() {
-    db.run(`CREATE TABLE IF NOT EXISTS huddleUsers (
-        userName TEXT NOT NULL,
-        userTeam TEXT NOT NULL,
-        PRIMARY KEY (userName, userTeam)
-    )`, (err) => {
-        if (err) {
-            console.error('Error creating Users table:', err.message);
-        } else {
-            console.log('Users Table created/loaded successfully.');
-        }
-    });
-}
-
-function createTeamsTable() {
-    db.run(`CREATE TABLE IF NOT EXISTS huddleTeams (
-        userTeam TEXT NOT NULL PRIMARY KEY,
-		userTeamName TEXT NOT NULL
-    )`, (err) => {
-        if (err) {
-            console.error('Error creating Teams table:', err.message);
-        } else {
-            console.log('Teams Table created/loaded successfully.');
-        }
-    });
-}
-
-app.post('/submit', (req, res) => {
-    if (req.method !== 'POST') {
-        return res.status(405).send('Method Not Allowed');
+        PRIMARY KEY (username, date, userteam)
+    )`,
+    (err, res) => {
+      if (err) {
+        console.error("Error creating Data table:", err.message);
+      } else {
+        console.log("Data Table created/connected successfully.");
+      }
     }
-    const { userName, date, userTeam, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 } = req.body;
-    db.run('INSERT OR REPLACE INTO huddleData (userName, date, userTeam, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [userName, date, userTeam, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5],
-        (err) => {
-            if (err) {
-                console.error(err);
-                res.status(500).send('Error saving data');
-            } else {
-                res.sendStatus(200);
-            }
+  );
+}
+
+function createUsersTable(client) {
+  client.query(
+    `CREATE TABLE IF NOT EXISTS huddleusers (
+        username TEXT NOT NULL,
+        userteam TEXT NOT NULL,
+        PRIMARY KEY (username, userteam)
+    )`,
+    (err, res) => {
+      if (err) {
+        console.error("Error creating Users table:", err.message);
+      } else {
+        console.log("Users Table created/connected successfully.");
+      }
+    }
+  );
+}
+
+function createTeamsTable(client) {
+  client.query(
+    `CREATE TABLE IF NOT EXISTS huddleteams (
+        userteam TEXT NOT NULL PRIMARY KEY,
+        userteamname TEXT NOT NULL
+    )`,
+    (err, res) => {
+      if (err) {
+        console.error("Error creating Teams table:", err.message);
+      } else {
+        console.log("Teams Table created/connected successfully.");
+      }
+    }
+  );
+}
+
+app.post("/submit", (req, res) => {
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
+  const {
+    username,
+    date,
+    userteam,
+    capacity,
+    wellbeing,
+    upskilling,
+    knowledgetransfer,
+    goal1,
+    goal2,
+    goal3,
+    goal4,
+    goal5,
+  } = req.body;
+  pool.query(
+    "INSERT INTO huddledata (username, date, userteam, capacity, wellbeing, upskilling, knowledgetransfer, goal1, goal2, goal3, goal4, goal5) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT (username, date, userteam) DO UPDATE SET capacity = EXCLUDED.capacity, wellbeing = EXCLUDED.wellbeing, upskilling = EXCLUDED.upskilling, knowledgetransfer = EXCLUDED.knowledgetransfer, goal1 = EXCLUDED.goal1, goal2 = EXCLUDED.goal2, goal3 = EXCLUDED.goal3, goal4 = EXCLUDED.goal4, goal5 = EXCLUDED.goal5",
+    [
+      username,
+      date,
+      userteam,
+      capacity,
+      wellbeing,
+      upskilling,
+      knowledgetransfer,
+      goal1,
+      goal2,
+      goal3,
+      goal4,
+      goal5,
+    ],
+    (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Error saving data");
+      } else {
+        res.sendStatus(200);
+      }
+    }
+  );
+});
+
+app.get("/load", (req, res) => {
+  if (req.method !== "GET") {
+    return res.status(405).send("Method Not Allowed");
+  }
+  const { username, date, userteam } = req.query;
+  pool.query(
+    "SELECT * FROM huddledata WHERE username = $1 AND date = $2 AND userteam = $3",
+    [username, date, userteam],
+    (err, result) => {
+      if (err) {
+        console.error(err.message);
+        res.sendStatus(500);
+      } else {
+        if (result.rows.length > 0) {
+          res.json(result.rows[0]);
+        } else {
+          res.sendStatus(204);
         }
+      }
+    }
+  );
+});
+
+app.use("/teams", async (req, res) => {
+  if (req.method === "GET") {
+    pool.query(
+      "SELECT * FROM huddleteams ORDER BY userteamname ASC",
+      (err, result) => {
+        if (err) {
+          res.status(500).json({ error: err.message });
+          return;
+        } else {
+          res.json(result.rows);
+        }
+      }
     );
+  } else if (req.method === "POST") {
+    const data = req.body;
+    try {
+      for (const obj of data) {
+        await pool.query(
+          "INSERT INTO huddleteams (userteam, userteamname) VALUES ($1, $2) ON CONFLICT (userteam) DO UPDATE SET userteamname = EXCLUDED.userteamname",
+          [obj.userteam, obj.userteamname]
+        );
+      }
+      res.sendStatus(200);
+    } catch (err) {
+      res.status(500).send("Error adding team(s)");
+    }
+  } else if (req.method === "DELETE") {
+    const data = req.body;
+    try {
+      for (const obj of data) {
+        await pool.query("DELETE FROM huddleteams WHERE userteam = $1", [
+          obj.userteam,
+        ]);
+      }
+      res.sendStatus(200);
+    } catch (err) {
+      res.status(500).send("Error deleting team(s)");
+    }
+  } else {
+    res.status(405).send("Method Not Allowed");
+  }
 });
 
-app.get('/load', (req, res) => {
-    if (req.method !== 'GET') {
-        return res.status(405).send('Method Not Allowed');
+app.use("/users", (req, res) => {
+  if (req.method === "POST") {
+    const { usernames, userteam } = req.body;
+    if (!Array.isArray(usernames) || usernames.length === 0) {
+      return res
+        .status(400)
+        .send("Invalid request format. Please provide an array of usernames.");
     }
-    const { userName, date, userTeam } = req.query;
-    db.get('SELECT * FROM huddleData WHERE userName = ? AND date = ? AND userTeam = ?', [userName, date, userTeam], (err, row) => {
+    const placeholders = usernames
+      .map((_, index) => `($${index * 2 + 1}, $${index * 2 + 2})`)
+      .join(", ");
+    const values = usernames.flatMap((name) => [name.trim(), userteam]);
+    pool.query(
+      `INSERT INTO huddleusers (username, userteam) VALUES ${placeholders} ON CONFLICT (username, userteam) DO NOTHING`,
+      values,
+      (err) => {
         if (err) {
-            console.error(err.message);
-            res.sendStatus(500);
+          console.error(err);
+          res.status(500).send("Error adding user(s)");
         } else {
-            if (row) {
-                res.json(row);
-            } else {
-                res.sendStatus(204);
-            }
+          res.sendStatus(200);
         }
-    });
+      }
+    );
+  } else if (req.method === "DELETE") {
+    const { usernames, userteam } = req.body;
+    if (!Array.isArray(usernames) || usernames.length === 0) {
+      return res
+        .status(400)
+        .send("Invalid request format. Please provide an array of usernames.");
+    }
+    const placeholders = usernames
+      .map((_, index) => `$${index + 1}`)
+      .join(", ");
+    pool.query(
+      `DELETE FROM huddleusers WHERE username IN (${placeholders}) AND userteam = $${
+        usernames.length + 1
+      }`,
+      [...usernames, userteam],
+      (err) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send("Error deleting user(s)");
+        } else {
+          res.sendStatus(200);
+        }
+      }
+    );
+  } else if (req.method === "GET") {
+    const { userteam } = req.query;
+    pool.query(
+      "SELECT * FROM huddleusers WHERE userteam = $1 ORDER BY username ASC",
+      [userteam],
+      (err, result) => {
+        if (err) {
+          res.status(500).json({ error: err.message });
+          return;
+        } else {
+          const usernames = result.rows.map((row) => row.username);
+          res.json({ usernames: usernames });
+        }
+      }
+    );
+  } else {
+    res.status(405).send("Method Not Allowed");
+  }
 });
 
-app.use('/teams', async (req, res) => {
-    if (req.method === 'GET') {
-        db.all("SELECT * FROM huddleTeams ORDER BY userTeamName ASC", (err, rows) => {
-            if (err) {
-                res.status(500).json({ error: err.message });
-                return;
-            } else {
-                res.json(rows);
-            }
-        });
-    } else if (req.method === 'POST') {
-        const data = req.body;
-        try {
-            for (const obj of data) {
-                await new Promise((resolve, reject) => {
-                    db.run('INSERT OR REPLACE INTO huddleTeams (userTeam, userTeamName) VALUES (?, ?)', [obj.userTeam, obj.userTeamName], (err) => {
-                        if (err) {
-                            console.error(err);
-                            reject(err);
-                        } else {
-                            resolve();
-                        }
-                    });
-                });
-            }
-            res.sendStatus(200);
-        } catch (err) {
-            res.status(500).send('Error adding team(s)');
+app.use("/metrics", (req, res) => {
+  if (req.method === "GET") {
+    const { userteam, start, end } = req.query;
+    pool.query(
+      "SELECT * FROM huddledata WHERE userteam = $1 AND date BETWEEN $2 AND $3",
+      [userteam, start, end],
+      (err, result) => {
+        if (err) {
+          console.error(err.message);
+          res.sendStatus(500);
+        } else {
+          if (result.rows.length > 0) {
+            res.json(result.rows);
+          } else {
+            res.sendStatus(204);
+          }
         }
-    } else if (req.method === 'DELETE') {
-        const data = req.body;
-        try {
-            for (const obj of data) {
-                await new Promise((resolve, reject) => {
-                    db.run('DELETE FROM huddleTeams WHERE userTeam = ?', obj.userTeam, (err) => {
-                        if (err) {
-                            console.error(err);
-                            reject(err);
-                        } else {
-                            resolve();
-                        }
-                    });
-                });
-            }
-            res.sendStatus(200);
-        } catch (err) {
-            res.status(500).send('Error deleting team(s)');
-        }
-    } else {
-        res.status(405).send('Method Not Allowed');
-    }
-});
-
-app.use('/users', (req, res) => {
-    if (req.method === 'POST') {
-        const { userNames, userTeam } = req.body;
-        if (!Array.isArray(userNames) || userNames.length === 0) {
-            return res.status(400).send('Invalid request format. Please provide an array of usernames.');
-        }
-        const placeholders = userNames.map(() => '(?, ?)').join(', ');
-        const values = userNames.flatMap(name => [name.trim(), userTeam]);
-        db.run(`INSERT OR REPLACE INTO huddleUsers (userName, userTeam) VALUES ${placeholders}`, values,
-            (err) => {
-                if (err) {
-                    console.error(err);
-                    res.status(500).send('Error adding user(s)');
-                } else {
-                    res.sendStatus(200);
-                }
-            }
-        );
-    } else if (req.method === 'DELETE') {
-        const { userNames, userTeam } = req.body;
-        if (!Array.isArray(userNames) || userNames.length === 0) {
-            return res.status(400).send('Invalid request format. Please provide an array of usernames.');
-        }
-        const placeholders = userNames.map(() => '?').join(', ');
-        db.run(`DELETE FROM huddleUsers WHERE userName IN (${placeholders}) AND userTeam = ?`, [...userNames, userTeam],
-            (err) => {
-                if (err) {
-                    console.error(err);
-                    res.status(500).send('Error deleting user(s)');
-                } else {
-                    res.sendStatus(200);
-                }
-            }
-        );
-    } else if (req.method === 'GET') {
-        const { userTeam } = req.query;
-        db.all("SELECT * FROM huddleUsers WHERE userTeam = ? ORDER BY userName ASC", userTeam, (err, rows) => {
-            if (err) {
-                res.status(500).json({ error: err.message });
-                return;
-            } else {
-                const userNames = rows.map(row => row.userName);
-                res.json({userNames: userNames});
-            }
-        });
-    } else {
-        res.status(405).send('Method Not Allowed');
-    }
-});
-
-app.use('/metrics', (req, res) => {
-    if (req.method === 'GET') {
-        const { userTeam, start, end } = req.query;
-        db.all('SELECT * FROM huddleData WHERE userTeam = ? AND date BETWEEN ? AND ?;', [userTeam, start, end], (err, rows) => {
-            if (err) {
-                console.error(err.message);
-                res.sendStatus(500);
-            } else {
-                if (rows) {
-                    res.json(rows);
-                } else {
-                    res.sendStatus(204);
-                }
-            }
-        });
-    } else {
-        res.status(405).send('Method Not Allowed');
-    }
+      }
+    );
+  } else {
+    res.status(405).send("Method Not Allowed");
+  }
 });
 
 app.listen(PORT, () => {

@@ -4,6 +4,11 @@ containerName=huddle
 containerRepo=mf/huddle
 runOptions=(
 -v /home/support/huddle:/home/node/huddle
+-e DB_USER=postgres
+-e DP_PASSWORD=strongPassword123
+-e DB_HOST=example.com
+-e DB_PORT=5432
+-e DB_DATABASE=huddle
 --restart always
 -p 3000:3000
 --health-cmd "curl -sf http://127.0.0.1:3000 || exit 1"

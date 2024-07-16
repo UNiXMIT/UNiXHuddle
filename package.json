@@ -1,13 +1,15 @@
 {
     "name": "huddle",
-    "version": "1.0.0",
-    "description": "Huddle form using Node.js, Express, and SQLite.",
+    "version": "2.0.0",
+    "description": "Huddle Metrics form using Node.js, Express, PostgreSQL and dotenv",
     "main": "huddle.js",
     "scripts": {
         "start": "node huddle.js"
     },
     "dependencies": {
+        "dotenv": "^16.4.5",
         "express": "^4.19.1",
+        "pg": "^8.12.0",
         "sqlite3": "^5.1.7"
     }
 }

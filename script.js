@@ -4,11 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/teams')
         .then(response => response.json())
         .then(data => {
-            const selectBox = document.getElementById('userTeam');
+            const selectBox = document.getElementById('userteam');
             data.forEach(data => {
                 const option = document.createElement('option');
-                option.value = data.userTeam;
-                option.text = data.userTeamName;
+                option.value = data.userteam;
+                option.text = data.userteamname;
                 selectBox.appendChild(option);
             });
             getUsers();
@@ -17,22 +17,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function getUsers() {
-        const userTeam = document.querySelector('#userTeam').value;
-        fetch(`/users?userTeam=${userTeam}`)
+        const userteam = document.querySelector('#userteam').value;
+        fetch(`/users?userteam=${userteam}`)
         .then(response => response.json())
         .then(data => {
-            const selectBox = document.getElementById('userName');
-            data.userNames.forEach(userName => {
+            const selectBox = document.getElementById('username');
+            data.usernames.forEach(username => {
                 const option = document.createElement('option');
-                option.value = userName;
-                option.text = userName;
+                option.value = username;
+                option.text = username;
                 selectBox.appendChild(option);
             });
             document.getElementById('date').value = toDateInputValue(new Date());
             getDataUser();
         })
         .catch(error => console.error('Error fetching names:', error));
-        previousUserValue = document.querySelector('#userName').value;
+        previousUserValue = document.querySelector('#username').value;
         previousDateValue = document.querySelector('#date').value;
     }
 
@@ -41,19 +41,19 @@ document.addEventListener('DOMContentLoaded', function() {
             for (let i = 0; i < inputs.length; i++) {
                 inputs[i].disabled = true;
             }
-            const userName = document.getElementById('userName').value;
+            const username = document.getElementById('username').value;
             const date = document.getElementById('date').value;
-            const userTeam = document.querySelector('#userTeam').value;
+            const userteam = document.querySelector('#userteam').value;
             const capacity = document.getElementById('capacity').value;
             const wellbeing = document.getElementById('wellbeing').value;
             const upskilling = document.getElementById('upskilling').value;
-            const knowledgeTransfer = document.getElementById('knowledgeTransfer').value;
+            const knowledgetransfer = document.getElementById('knowledgetransfer').value;
             const goal1 = document.getElementById('goal1').value;
             const goal2 = document.getElementById('goal2').value;
             const goal3 = document.getElementById('goal3').value;
             const goal4 = document.getElementById('goal4').value;
             const goal5 = document.getElementById('goal5').value;
-            const data = JSON.stringify({ userName, date, userTeam, capacity, wellbeing, upskilling, knowledgeTransfer, goal1, goal2, goal3, goal4, goal5 });
+            const data = JSON.stringify({ username, date, userteam, capacity, wellbeing, upskilling, knowledgetransfer, goal1, goal2, goal3, goal4, goal5 });
             sendData(data);
             getDataUser();
         }
@@ -121,11 +121,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function getDataUser() {
-        const userName = document.getElementById('userName').value;
+        const username = document.getElementById('username').value;
         const date = document.getElementById('date').value;
-        const userTeam = document.querySelector('#userTeam').value;
-        if (userName && date && userTeam) {
-            await fetch(`/load?userName=${userName}&date=${date}&userTeam=${userTeam}`)
+        const userteam = document.querySelector('#userteam').value;
+        if (username && date && userteam) {
+            await fetch(`/load?username=${username}&date=${date}&userteam=${userteam}`)
             .then(response => response.json())
             .then(data => {
                 populateForm(data);
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('capacity').value = data.capacity || '0';
             document.getElementById('wellbeing').value = data.wellbeing || '0';
             document.getElementById('upskilling').value = data.upskilling || '0';
-            document.getElementById('knowledgeTransfer').value = data.knowledgeTransfer || '0';
+            document.getElementById('knowledgetransfer').value = data.knowledgetransfer || '0';
             document.getElementById('goal1').value = data.goal1 || '';
             document.getElementById('goal2').value = data.goal2 || '';
             document.getElementById('goal3').value = data.goal3 || '';
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('capacity').value = '0';
         document.getElementById('wellbeing').value = '0';
         document.getElementById('upskilling').value = '0';
-        document.getElementById('knowledgeTransfer').value = '0';
+        document.getElementById('knowledgetransfer').value = '0';
         document.getElementById('goal1').value = '';
         document.getElementById('goal2').value = '';
         document.getElementById('goal3').value = '';
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function selectNext() {
-        let select = document.getElementById('userName');
+        let select = document.getElementById('username');
         if (!formChanged && select.selectedIndex < select.options.length - 1) {
             select.selectedIndex++;
             if (!select.value) {
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function selectPrevious() {
-        let select = document.getElementById('userName');
+        let select = document.getElementById('username');
         if (!formChanged && select.selectedIndex > 0) {
             select.selectedIndex--;
             if (!select.value) {
@@ -206,8 +206,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function onInputChange() {
-        document.querySelector('#userTeam').disabled = true;
-        document.querySelector('#userName').disabled = true;
+        document.querySelector('#userteam').disabled = true;
+        document.querySelector('#username').disabled = true;
         document.querySelector('#date').disabled = true;
         let alertButton = document.querySelector('.submit');
         alertButton.style.backgroundColor = '#ffc300';
@@ -223,8 +223,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function onSavedChange() {
-        document.querySelector('#userTeam').disabled = false;
-        document.querySelector('#userName').disabled = false;
+        document.querySelector('#userteam').disabled = false;
+        document.querySelector('#username').disabled = false;
         document.querySelector('#date').disabled = false;
         let alertButton = document.querySelector('.submit');
         alertButton.style = '';
@@ -283,12 +283,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isNaN(upskillingValue)) {
             document.getElementById('upskilling').value = 0;
         }
-        let knowledgeValue = parseFloat(document.getElementById('knowledgeTransfer').value);
+        let knowledgeValue = parseFloat(document.getElementById('knowledgetransfer').value);
         if (knowledgeValue < 0) {
-            document.getElementById('knowledgeTransfer').value = 0;
+            document.getElementById('knowledgetransfer').value = 0;
         }
         if (isNaN(knowledgeValue)) {
-            document.getElementById('knowledgeTransfer').value = 0;
+            document.getElementById('knowledgetransfer').value = 0;
         }
     }
 
@@ -318,18 +318,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    document.querySelector('#userTeam').addEventListener('change', async function() {
+    document.querySelector('#userteam').addEventListener('change', async function() {
         if (!formChanged) {
-            document.querySelector('#userName').innerHTML = "";
+            document.querySelector('#username').innerHTML = "";
             getUsers();
             await sleep(500);
             checkUserList();
         }
     });
 
-    document.querySelector('#userName').addEventListener('change', function() {
+    document.querySelector('#username').addEventListener('change', function() {
         if (!formChanged) {
-            previousUserValue = document.querySelector('#userName').value;
+            previousUserValue = document.querySelector('#username').value;
             getDataUser();
             checkUserList();
         }
@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function checkUserList() {
-        let select = document.getElementById('userName');
+        let select = document.getElementById('username');
         if (select.selectedIndex === select.options.length - 1) {
             document.querySelector('#next').style.visibility = 'hidden';
             document.querySelector('#previous').style.visibility = 'visible';
