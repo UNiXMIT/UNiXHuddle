@@ -54,8 +54,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const goal4 = document.getElementById('goal4').value;
             const goal5 = document.getElementById('goal5').value;
             const data = JSON.stringify({ username, date, userteam, capacity, wellbeing, upskilling, knowledgetransfer, goal1, goal2, goal3, goal4, goal5 });
-            sendData(data);
-            getDataUser();
+            (async ()=>{
+                await sendData(data);
+                getDataUser();
+            })(); 
         }
     }
 
