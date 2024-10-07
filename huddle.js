@@ -33,7 +33,7 @@ function createTable(client) {
         username TEXT NOT NULL,
         date DATE NOT NULL,
         userteam TEXT NOT NULL,
-        capacity INTEGER,
+        capacity NUMERIC(10, 2),
         wellbeing INTEGER,
         upskilling INTEGER,
         knowledgetransfer INTEGER,
