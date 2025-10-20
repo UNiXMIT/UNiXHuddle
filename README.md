@@ -165,13 +165,18 @@ GET /metrics
 http://example.com:3000/metrics?userteam=SW&start=2024-01-28&end=2024-02-28
 ```
 To get this data directly into Excel:  
-1. Open Excel Desktop.  
-2. Create a blank workbook.  
-3. Select Data > Get & Transform > From Web.  
-4. Enter the API URL (modifying the start and end dates) into the text box, and click OK.  
-5. The Navigator pane should already have the Transform tab selected. Select 'To Table' and click OK, accepting the defaults.  
-6. Left click the arrows in the 'Column1' header. This will reveal the names of the value pairs.  
+1. Open Excel Desktop.    
+2. Create a blank workbook.    
+3. Select Data > Get & Transform Data > From Web.   
+  ![1](images/excel01.png)  
+4. Enter the API URL (modifying the userteam, start and end dates) into the text box, and click OK.   
+  ![2](images/excel02.png)  
+5. The Navigator pane should already have the Transform tab selected. Select 'To Table' and click OK, accepting the defaults.   
+  ![3](images/excel03.png)  
+6. Left-click the arrows in the 'Column1' header. This will reveal the names of the value pairs.  
 7. Uncheck the box 'Use original column name as prefix' and click OK.  
+  ![4](images/excel04.png)  
   You should now see a preview of the table with the data from the API response.  
 8. Select 'Close & Load' in the Navigator pane.  
+  ![5](images/excel05.png)  
   The data will now be loaded into a table in the Excel workbook.  
