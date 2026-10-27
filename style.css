@@ -1,8 +1,61 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Source+Code+Pro&display=swap');
+:root,
+[data-theme="light"] {
+    color-scheme: light;
+    --bg: #fff;
+    --fg: #0d0d0d;
+    --field-bg: #fff;
+    --field-fg: #0d0d0d;
+    --border: #767676;
+    --button-bg: #0d0d0d;
+    --button-fg: #fff;
+    --input-border: #3d8ff8;
+}
+[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #1b1b1b;
+    --fg: #e8e8e8;
+    --field-bg: #2a2a2a;
+    --field-fg: #e8e8e8;
+    --border: #555;
+    --button-bg: #e8e8e8;
+    --button-fg: #0d0d0d;
+    --input-border: #3d8ff8;
+}
 body {
     margin: 0;
     padding: 0 10px;
     overflow-x: hidden;
+    background: var(--bg);
+    color: var(--fg);
+    transition: background 0.3s, color 0.3s;
+}
+select,
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+    background: var(--field-bg);
+    color: var(--field-fg);
+    border: 2px solid var(--border);
+}
+option {
+    background: var(--field-bg);
+    color: var(--field-fg);
+}
+#themeToggle {
+    float: right;
+    margin-top: 30px;
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    transition: color 0.3s;
+}
+#themeToggle:hover {
+    color: #0570f6;
 }
 #main {
     width: 500px;
@@ -56,6 +109,14 @@ select {
 input {
     font-family: "Roboto", sans-serif;
     font-size: 14px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s;
+    padding: 5px;
+}
+input:focus {
+    border-color: var(--input-border);
 }
 #group2 input {
     display: inline-block;
@@ -100,13 +161,13 @@ input[type="number"]::-webkit-outer-spin-button {
     font-weight: 600;
     line-height: 10px;
     padding: 20px;
-    background: #0d0d0d;
-    color: #fff;
+    background: var(--button-bg);
+    color: var(--button-fg);
     margin: 20px 10px 20px 50px;
     display: inline-block;
     width: 120px;
     text-align: center;
-    border: 1px solid #0d0d0d;
+    border: 1px solid var(--button-bg);
     transition: color 0.3s, background 0.3s;
     text-decoration: none;
     border-radius: 6px;
@@ -114,8 +175,8 @@ input[type="number"]::-webkit-outer-spin-button {
     height: 100%;
 }
 .submit:hover {
-    background: #fff;
-    color: #0d0d0d;
+    background: var(--button-fg);
+    color: var(--button-bg);
     cursor: pointer;
 }
 .discard {
@@ -124,13 +185,13 @@ input[type="number"]::-webkit-outer-spin-button {
     font-weight: 600;
     line-height: 10px;
     padding: 20px;
-    background: #0d0d0d;
-    color: #fff;
+    background: var(--button-bg);
+    color: var(--button-fg);
     margin: 20px 50px 20px 10px;
     display: inline-block;
     width: 120px;
     text-align: center;
-    border: 1px solid #0d0d0d;
+    border: 1px solid var(--button-bg);
     transition: color 0.3s, background 0.3s;
     text-decoration: none;
     border-radius: 6px;
@@ -138,8 +199,8 @@ input[type="number"]::-webkit-outer-spin-button {
     height: 100%;
 }
 .discard:hover {
-    background: #fff;
-    color: #0d0d0d;
+    background: var(--button-fg);
+    color: var(--button-bg);
     cursor: pointer;
 }
 .button-container {
@@ -148,7 +209,7 @@ input[type="number"]::-webkit-outer-spin-button {
     margin-top: 10px;
 }
 .disableHover:hover {
-    background: #0d0d0d;
-    color: #fff;
+    background: var(--button-bg);
+    color: var(--button-fg);
     cursor: default;
 }

@@ -7,9 +7,24 @@
     <link href="style.css" rel="stylesheet" />
     <link href="https://use.fontawesome.com/releases/v6.5.0/css/all.css" rel="stylesheet" crossorigin="anonymous">
     <meta name="robots" content="noindex">
+    <script>
+        // applied before first paint to avoid a flash of the wrong theme
+        (function() {
+            try {
+                var stored = localStorage.getItem('huddle.theme');
+                var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch (error) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
 </head>
 <body>
     <div id="main">
+    <button type="button" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+        <i class="fa-solid fa-moon"></i>
+    </button>
     <h1>Huddle</h1>
     <form id="userDataForm" onsubmit="return false" novalidate>
         <label for="userteam">Team:</label>

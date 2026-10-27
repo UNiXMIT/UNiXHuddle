@@ -1,5 +1,60 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+    const TEAM_STORAGE_KEY = 'huddle.userteam';
+    const USER_STORAGE_KEY = 'huddle.username';
+    const THEME_STORAGE_KEY = 'huddle.theme';
+
+    function readStorage(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function writeStorage(key, value) {
+        try {
+            if (value) {
+                localStorage.setItem(key, value);
+            } else {
+                localStorage.removeItem(key);
+            }
+        } catch (error) {
+            // storage unavailable (private mode / disabled), selections just won't persist
+        }
+    }
+
+    function restoreSelection(selectBox, value) {
+        if (value && [...selectBox.options].some(option => option.value === value)) {
+            selectBox.value = value;
+            return true;
+        }
+        return false;
+    }
+
+    function saveSelections() {
+        writeStorage(TEAM_STORAGE_KEY, document.querySelector('#userteam').value);
+        writeStorage(USER_STORAGE_KEY, document.querySelector('#username').value);
+    }
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        const toggle = document.querySelector('#themeToggle');
+        const icon = toggle.querySelector('i');
+        const label = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+        icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        toggle.setAttribute('title', label);
+        toggle.setAttribute('aria-label', label);
+    }
+
+    applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+
+    document.querySelector('#themeToggle').addEventListener('click', function() {
+        const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(theme);
+        writeStorage(THEME_STORAGE_KEY, theme);
+    });
+
     function getTeams() {
         fetch('/teams')
         .then(response => response.json())
@@ -11,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 option.text = data.userteamname;
                 selectBox.appendChild(option);
             });
+            restoreSelection(selectBox, readStorage(TEAM_STORAGE_KEY));
             getUsers();
         })
         .catch(error => console.error('Error fetching names:', error));
@@ -28,6 +84,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 option.text = username;
                 selectBox.appendChild(option);
             });
+            restoreSelection(selectBox, readStorage(USER_STORAGE_KEY));
+            saveSelections();
+            previousUserValue = selectBox.value;
+            checkUserList();
             document.getElementById('date').value = toDateInputValue(new Date());
             getDataUser();
         })
@@ -165,9 +225,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('goal3').value = '';
         document.getElementById('goal4').value = '';
         document.getElementById('goal5').value = '';
-        document.getElementById('capacity').style.color = 'black';
+        document.getElementById('capacity').style.color = 'var(--field-fg)';
+        document.getElementById('capacity').style.borderColor = 'var(--border)';
         document.getElementById('capacity').style.fontWeight = 'normal';
-        document.getElementById('wellbeing').style.color = 'black';
+        document.getElementById('wellbeing').style.color = 'var(--field-fg)';
+        document.getElementById('wellbeing').style.borderColor = 'var(--border)';
         document.getElementById('wellbeing').style.fontWeight = 'normal';
     }
 
@@ -179,6 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 resetForm();
             }
             getDataUser();
+            saveSelections();
             document.querySelector('#previous').style.visibility = 'visible';
         } 
         if (select.selectedIndex === select.options.length - 1) {
@@ -194,6 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 resetForm();
             }
             getDataUser();
+            saveSelections();
             document.querySelector('#next').style.visibility = 'visible';
         }
         if (select.selectedIndex === 0) {
@@ -259,17 +323,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (capacityValue > 3) {  
             document.getElementById('capacity').style.color = '#f73333';
+            document.getElementById('capacity').style.borderColor = '#f73333';
             document.getElementById('capacity').style.fontWeight = 'bold';          
         } else {
-            document.getElementById('capacity').style.color = 'black';
+            document.getElementById('capacity').style.color = 'var(--field-fg)';
+            document.getElementById('capacity').style.borderColor = 'var(--border)';
             document.getElementById('capacity').style.fontWeight = 'normal';
         }
         let wellbeingValue = parseFloat(document.getElementById('wellbeing').value);
         if (wellbeingValue < 31 && wellbeingValue > 0) {
             document.getElementById('wellbeing').style.color = '#f73333';
+            document.getElementById('wellbeing').style.borderColor = '#f73333';
             document.getElementById('wellbeing').style.fontWeight = 'bold';
         } else {
-            document.getElementById('wellbeing').style.color = 'black';
+            document.getElementById('wellbeing').style.color = 'var(--field-fg)';
+            document.getElementById('wellbeing').style.borderColor = 'var(--border)';
             document.getElementById('wellbeing').style.fontWeight = 'normal';
         }
         if (wellbeingValue < 0) {
@@ -332,6 +400,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#username').addEventListener('change', function() {
         if (!formChanged) {
             previousUserValue = document.querySelector('#username').value;
+            saveSelections();
             getDataUser();
             checkUserList();
         }
