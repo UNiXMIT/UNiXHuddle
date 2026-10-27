@@ -58,7 +58,8 @@ option {
     color: #0570f6;
 }
 #main {
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     margin: 30px auto 0;
 }
 h1 {
@@ -212,4 +213,18 @@ input[type="number"]::-webkit-outer-spin-button {
     background: var(--button-bg);
     color: var(--button-fg);
     cursor: default;
+}
+@media (max-width: 540px) {
+    /* iOS Safari zooms into focused fields with font-size below 16px */
+    #main input,
+    #main select {
+        font-size: 16px;
+    }
+    .submit,
+    .discard {
+        box-sizing: border-box;
+        width: auto;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
 }
